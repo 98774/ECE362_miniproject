@@ -1,1 +1,2 @@
-# ECE362_miniproject
+# ECE362 Mini Project
+The game of Pong
