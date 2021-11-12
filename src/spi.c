@@ -63,7 +63,7 @@ void setup_spi1() {
 	SPI1->CR1 &= ~(SPI_CR1_SPE); //clear enable bit
 
 	//SPI1->CR1 |= SPI_CR1_BIDIMODE | SPI_CR1_BIDIOE; //set bidirectional output
-	SPI1->CR1 = SPI_CR1_BR; //set BR to 7; Potentially causing the flickering
+	SPI1->CR1 |= SPI_CR1_BR; //set BR to 7; Potentially causing the flickering
 	//configure datasize to 10, ss output enable, nss pulse
 	SPI1->CR2 = SPI_CR2_DS_3 | SPI_CR2_DS_0 | SPI_CR2_SSOE | SPI_CR2_NSSP;
 	SPI1->CR1 |= SPI_CR1_MSTR;
