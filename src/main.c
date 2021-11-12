@@ -42,6 +42,10 @@ SPI1:
  	--PB13: SPI2_SCK
  	--PB14: SPI2_MISO
  	--PB15: SPI2_MISO
+
+Controller GPIO (Need 1 interrupt per button so 6 unique pins):
+	PC0-2: C1
+	PC3-5: C2
 *******************************************************************************/
 void init_gpio(){
 
