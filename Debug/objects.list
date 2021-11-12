@@ -22,6 +22,7 @@
 "StdPeriph_Driver/src/stm32f0xx_usart.o"
 "StdPeriph_Driver/src/stm32f0xx_wwdg.o"
 "src/dac.o"
+"src/dma.o"
 "src/game.o"
 "src/main.o"
 "src/spi.o"

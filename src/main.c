@@ -76,9 +76,32 @@ void init_gpio(){
     // Set the EXTI interrupts
     EXTI->FTSR |= EXTI_FTSR_TR4 | EXTI_FTSR_TR5 | EXTI_FTSR_TR6 | EXTI_FTSR_TR7
             | EXTI_FTSR_TR8;
+
+    //Unmask interrupt
+    NVIC->ISER[0] |= 1 << EXTI4_15_IRQn;
 }
 
 int main() {
+	//Storage and initialization for OLED
+	uint16_t oled_msg[34]; //array used for DMA on the OLED
+
+	/*
+	//setup SPI for the OLED
+	setup_spi1();
+	spi_init_oled(oled_msg);
+
+	//setup DMA for the OLED
+    setup_dma_ch3();
+    enable_dma_ch3();
+    */
+
+	// 2.4 SPI OLED
+      setup_spi1(oled_msg);
+      spi_init_oled(oled_msg);
+      //setup_dma_ch3();
+      //enable_dma_ch3();
+      spi_display1("Hello again,");
+      spi_display2("Test display");
 
 	for(;;);
 }

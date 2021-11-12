@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../src/dac.c \
+../src/dma.c \
 ../src/game.c \
 ../src/main.c \
 ../src/spi.c \
@@ -14,6 +15,7 @@ C_SRCS += \
 
 OBJS += \
 ./src/dac.o \
+./src/dma.o \
 ./src/game.o \
 ./src/main.o \
 ./src/spi.o \
@@ -23,6 +25,7 @@ OBJS += \
 
 C_DEPS += \
 ./src/dac.d \
+./src/dma.d \
 ./src/game.d \
 ./src/main.d \
 ./src/spi.d \

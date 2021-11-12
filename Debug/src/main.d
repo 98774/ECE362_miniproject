@@ -30,6 +30,7 @@ src/main.o: ../src/main.c \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_misc.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/dac.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/spi.h \
+ C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/STM32f0xx.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/game.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/timer.h
 
@@ -94,6 +95,8 @@ C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Drive
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/dac.h:
 
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/spi.h:
+
+C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/STM32f0xx.h:
 
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/game.h:
 
