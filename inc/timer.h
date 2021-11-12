@@ -1,3 +1,4 @@
 
-void configure_TIM6();
-void configure_TIM7();
+void init_TIM6();
+void init_TIM7();
+void TIM7_IRQHandler(void);
