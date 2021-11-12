@@ -1,0 +1,7 @@
+/[Bb]inaries/
+/[Ii]ncludes/
+/StdPeriph_Driver/
+/[Ss]startup/
+/[Dd]ebug/
+/CMSIS/
+LinkerScript.Id
