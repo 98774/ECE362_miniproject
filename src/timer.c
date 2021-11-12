@@ -23,8 +23,21 @@ void configure_TIM6(){
 
     return;
 }
+/*******************************************************************************
+Author: Jonathon Snyder
+Date: 11/11/2021
+Description: initializes timer 7 and enables the interrupt.
+	The DAC subsytem uses this timer to drive the audio output.
+*******************************************************************************/
+void init_tim7(void) {
+	int psc = 8000000 / RATE - 1;
+	RCC->APB1ENR |= RCC_APB1ENR_TIM7EN;
+	TIM7->ARR = 6-1;
+	TIM7->PSC = psc;
+	TIM7->CR1 |= TIM_CR1_CEN;
+	//NVIC->ISER |= NVIC_ISER_TIM7_IRQHandler;
+	//need to use EXTI to unmask
+	TIM7->DIER |= TIM_DIER_UIE;
+	NVIC->ISER[0] |= (1 << 18); //TIM7 Interrupt
 
-//TIM7 will be used as the speed of the game
-void configure_TIM7(){
-    return;
 }
