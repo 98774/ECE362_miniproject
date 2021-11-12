@@ -71,6 +71,7 @@ Date: 11/11/2021
 Description: initializes timer 7 and enables the interrupt.
 	The DAC subsytem uses this timer to drive the audio output.
 *******************************************************************************/
+/*
 void init_TIM7(void) {
 	int psc = 8000000 / RATE - 1;
 	RCC->APB1ENR |= RCC_APB1ENR_TIM7EN;
@@ -83,13 +84,14 @@ void init_TIM7(void) {
 	NVIC->ISER[0] |= (1 << 18); //TIM7 Interrupt
 
 }
-
+*/
 /*******************************************************************************
 Author: Jonathon Snyder
 Date: 11/11/2021
 Description: initializes timer 7 and enables the interrupt.
     The DAC subsytem uses this timer to drive the audio output.
 *******************************************************************************/
+/*
 void TIM7_IRQHandler(void) {
     TIM7->SR &= ~TIM_SR_UIF; //acknowledge the interrupt
     DAC->SWTRIGR |= DAC_SWTRIGR_SWTRIG1;
@@ -104,3 +106,5 @@ void TIM7_IRQHandler(void) {
     DAC->DHR12R1 = newVal;
 
 }
+*/
+

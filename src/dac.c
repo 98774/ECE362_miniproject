@@ -1,6 +1,6 @@
 #include "dac.h"
 #include "STM32f0xx.h"
-
+#include <math.h>
 
 //===========================================================================
 // 2.5 Output Sine Wave
@@ -28,20 +28,4 @@ void setup_dac() {
 	DAC->CR |= DAC_CR_TEN1;
 	DAC->CR |= DAC_CR_TSEL1;
 	DAC->CR |= DAC_CR_EN1;
-}
-
-
-void TIM7_IRQHandler(void) {
-	TIM7->SR &= ~TIM_SR_UIF; //acknowledge the interrupt
-	DAC->SWTRIGR |= DAC_SWTRIGR_SWTRIG1;
-	offset += step;
-	if((offset >> 16) > N) //check to reset offset
-		offset -= N * (1 << 16); //fixed point rep of N
-	int newVal = wavetable[offset>>16]; //get sample at offset
-	newVal *= volume;
-	newVal = newVal >> 16; //shift right
-	newVal += 2048; //centered on 0
-	//value becomes (wavetable[offset>>16] * 2047) >> 16 + 2048
-	DAC->DHR12R1 = newVal;
-
 }
