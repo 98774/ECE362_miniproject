@@ -47,9 +47,9 @@ SPI2:
      --PA4: DAC
 
 Controller GPIO (Need 1 interrupt per button so 6 unique pins):
-	PC0-2: C1
-	PC3-4: C2
-	PC0 will be pause button
+	PC5-6: C1
+	PC7-8: C2
+	PC4 will be pause button
 *******************************************************************************/
 
 /*******************************************************************************
@@ -64,18 +64,18 @@ void init_gpio(){
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN | RCC_AHBENR_GPIOBEN | RCC_AHBENR_GPIOAEN;
 
     // Set the mode of GPIOC pins to be inputs
-    GPIOC->MODER &= ~(GPIO_MODER_MODER0 | GPIO_MODER_MODER1 | GPIO_MODER_MODER2
-            | GPIO_MODER_MODER3 | GPIO_MODER_MODER4);
+    GPIOC->MODER &= ~(GPIO_MODER_MODER4 | GPIO_MODER_MODER5 | GPIO_MODER_MODER6
+            | GPIO_MODER_MODER7 | GPIO_MODER_MODER8);
 
     // Set the GPIOC pins to have pull up resistors
-    GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR0 | GPIO_PUPDR_PUPDR1 | GPIO_PUPDR_PUPDR2
-            | GPIO_MODER_MODER3 | GPIO_MODER_MODER4);
-    GPIOC->PUPDR |= GPIO_PUPDR_PUPDR0_0 | GPIO_PUPDR_PUPDR1_0 |
-            GPIO_PUPDR_PUPDR2_0 | GPIO_PUPDR_PUPDR3_0 | GPIO_PUPDR_PUPDR4_0;
+    GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR4 | GPIO_PUPDR_PUPDR5 | GPIO_PUPDR_PUPDR6
+            | GPIO_MODER_MODER7 | GPIO_MODER_MODER8);
+    GPIOC->PUPDR |= GPIO_PUPDR_PUPDR4_0 | GPIO_PUPDR_PUPDR5_0 |
+            GPIO_PUPDR_PUPDR6_0 | GPIO_PUPDR_PUPDR7_0 | GPIO_PUPDR_PUPDR8_0;
 
     // Set the EXTI interrupts
-    EXTI->FTSR |= EXTI_FTSR_TR0 | EXTI_FTSR_TR1 | EXTI_FTSR_TR2 | EXTI_FTSR_TR3
-            | EXTI_FTSR_TR4 | EXTI_FTSR_TR5;
+    EXTI->FTSR |= EXTI_FTSR_TR4 | EXTI_FTSR_TR5 | EXTI_FTSR_TR6 | EXTI_FTSR_TR7
+            | EXTI_FTSR_TR8;
 }
 
 int main() {
