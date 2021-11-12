@@ -101,7 +101,7 @@ Author: Jonathon Snyder
 Date: 11/11/2021
 Description: runs the OLED initialization sequence
 *******************************************************************************/
-void spi_init_oled(uint16_t oled_msg[]) {
+void spi_init_oled() {
 	nano_wait(1000000); //wait 1ms for powerup
 	spi_cmd(0x38); //setup for 8 bit operation
 	spi_cmd(0x08); //turn display off
@@ -112,6 +112,7 @@ void spi_init_oled(uint16_t oled_msg[]) {
 	spi_cmd(0x02); //move cursor to home position
 	spi_cmd(0x0c); //turn display on
 
+	/*
 	//initialize oled_message
 	for(int i = 0; i < 34; i++)
 		oled_msg[i] = 0x200 | ' '; //ASCII space
@@ -119,6 +120,7 @@ void spi_init_oled(uint16_t oled_msg[]) {
 	//update command entries
 	oled_msg[0] = 0x0002;
 	oled_msg[17] = 0x00c0;
+	*/
 }
 
 //displays the first row on the screen

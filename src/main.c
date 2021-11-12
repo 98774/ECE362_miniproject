@@ -33,9 +33,9 @@ Description: initializes the gpio pins to their respective functions
 Pins:
 SPI1:
 	--PA15: SPI1_NSS
- 	--PB3: SPI_SCK
- 	--PB4: SPI1_MISO
- 	--PB5: SPI1_MOSI
+ 	--PA5: SPI_SCK
+ 	--//PB4: SPI1_MISO
+ 	--PA7: SPI1_MOSI
 
 SPI2:
  	--PB12: SPI2_NSS
@@ -95,9 +95,11 @@ int main() {
     enable_dma_ch3();
     */
 
+	init_gpio();
+
 	// 2.4 SPI OLED
-      setup_spi1(oled_msg);
-      spi_init_oled(oled_msg);
+      setup_spi1();
+      spi_init_oled();
       //setup_dma_ch3();
       //enable_dma_ch3();
       spi_display1("Hello again,");
