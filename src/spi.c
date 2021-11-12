@@ -54,21 +54,21 @@ void setup_spi1() {
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN; //enable in rcc
 
 	//set pins to 10 in MODER
-	GPIOA->MODER &= ~(0xc000fc00); //set top to 00xx0000
-	GPIOA->MODER |= 0x8000a800; //set 15, 5,6,7 to alternate functions
-	GPIOA->AFR[1] &= ~0xf0000000; //clear 15
-	GPIOA->AFR[0] &= ~0xfff00000; //clear 5,6,7
+	GPIOA->MODER &= ~(GPIO_MODER_MODER5 | GPIO_MODER_MODER7 | GPIO_MODER_MODER15); //set top to 00xx0000
+	GPIOA->MODER |= GPIO_MODER_MODER5_1 | GPIO_MODER_MODER7_1 | GPIO_MODER_MODER15_1; //set 15, 5,6,7 to alternate functions
+	GPIOA->AFR[1] &= ~GPIO_AFRH_AFR15; //clear 15
+	GPIOA->AFR[0] &= ~(GPIO_AFRL_AFR5 | GPIO_AFRL_AFR7); //clear 5,6,7
 	//AF0 is desired so leave bits cleared
 
 	SPI1->CR1 &= ~(SPI_CR1_SPE); //clear enable bit
 
-	SPI1->CR1 |= SPI_CR1_BIDIMODE | SPI_CR1_BIDIOE; //set bidirectional output
-	SPI1->CR1 |= SPI_CR1_BR; //set BR to 7
+	//SPI1->CR1 |= SPI_CR1_BIDIMODE | SPI_CR1_BIDIOE; //set bidirectional output
+	SPI1->CR1 = SPI_CR1_BR; //set BR to 7; Potentially causing the flickering
 	//configure datasize to 10, ss output enable, nss pulse
 	SPI1->CR2 = SPI_CR2_DS_3 | SPI_CR2_DS_0 | SPI_CR2_SSOE | SPI_CR2_NSSP;
 	SPI1->CR1 |= SPI_CR1_MSTR;
 
-	SPI1->CR2 |= SPI_CR2_TXDMAEN; //generate DMA request when TX is empty
+	//SPI1->CR2 |= SPI_CR2_TXDMAEN; //generate DMA request when TX is empty
 
 	SPI1->CR1 |= SPI_CR1_SPE; //enable spi1
 }
