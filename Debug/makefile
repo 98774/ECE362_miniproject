@@ -28,13 +28,13 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: ECE362_miniproject.elf
+all: Project.elf
 
 # Tool invocations
-ECE362_miniproject.elf: $(OBJS) $(USER_OBJS) C:\Users\bryce\workspace\ECE362_miniproject/LinkerScript.ld
+Project.elf: $(OBJS) $(USER_OBJS) C:\Users\jsnyd\OneDrive\ -\ purdue.edu\School\ECE\ 36200\Project/LinkerScript.ld
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU GCC Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -T"C:/Users/bryce/workspace/ECE362_miniproject/LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "ECE362_miniproject.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
+	arm-none-eabi-gcc -mcpu=cortex-m0 -mthumb -mfloat-abi=soft -T"C:/Users/jsnyd/OneDrive - purdue.edu/School/ECE 36200/Project/LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "Project.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
@@ -46,8 +46,8 @@ clean:
 
 post-build:
 	-@echo 'Generating binary and Printing size information:'
-	arm-none-eabi-objcopy -O binary "ECE362_miniproject.elf" "ECE362_miniproject.bin"
-	arm-none-eabi-size "ECE362_miniproject.elf"
+	arm-none-eabi-objcopy -O binary "Project.elf" "Project.bin"
+	arm-none-eabi-size "Project.elf"
 	-@echo ' '
 
 .PHONY: all clean dependents
