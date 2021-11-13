@@ -58,33 +58,13 @@ Date: 11/11/2021
 Description: initialize all the pins for the for gpio use
         the buttons will be active low and trigger interrupt on falling edge
 *******************************************************************************/
-void init_gpio(){
 
-    // Turn on clock for the GPIO pins
-    RCC->AHBENR |= RCC_AHBENR_GPIOCEN | RCC_AHBENR_GPIOBEN | RCC_AHBENR_GPIOAEN;
-
-    // Set the mode of GPIOC pins to be inputs
-    GPIOC->MODER &= ~(GPIO_MODER_MODER4 | GPIO_MODER_MODER5 | GPIO_MODER_MODER6
-            | GPIO_MODER_MODER7 | GPIO_MODER_MODER8);
-
-    // Set the GPIOC pins to have pull up resistors
-    GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR4 | GPIO_PUPDR_PUPDR5 | GPIO_PUPDR_PUPDR6
-            | GPIO_MODER_MODER7 | GPIO_MODER_MODER8);
-    GPIOC->PUPDR |= GPIO_PUPDR_PUPDR4_0 | GPIO_PUPDR_PUPDR5_0 |
-            GPIO_PUPDR_PUPDR6_0 | GPIO_PUPDR_PUPDR7_0 | GPIO_PUPDR_PUPDR8_0;
-
-    // Set the EXTI interrupts
-    EXTI->FTSR |= EXTI_FTSR_TR4 | EXTI_FTSR_TR5 | EXTI_FTSR_TR6 | EXTI_FTSR_TR7
-            | EXTI_FTSR_TR8;
-
-    //Unmask interrupt
-    NVIC->ISER[0] |= 1 << EXTI4_15_IRQn;
-}
+#define SAMPLES 30
 
 int main() {
 	//Storage and initialization for OLED
 	uint16_t oled_msg[34]; //array used for DMA on the OLED
-
+	uint16_t dac_sample_array[SAMPLES];
 	/*
 	//setup SPI for the OLED
 	setup_spi1();
@@ -95,15 +75,22 @@ int main() {
     enable_dma_ch3();
     */
 
-	init_gpio();
+	init_buttons();
 
-	// 2.4 SPI OLED
-      setup_spi1();
-      spi_init_oled();
-      //setup_dma_ch3();
-      //enable_dma_ch3();
-      spi_display1("Hello again,");
-      spi_display2("Test display");
+	//Initialization for OLED
+    setup_spi1();
+    spi_init_oled();
+    //setup_dma_ch3();
+    //enable_dma_ch3();
+    spi_display1("Hello again,");
+    spi_display2("Test display");
+
+    //Initializetion for DAC
+    init_tim7_dac();
+    setup_dma_dac(dac_sample_array, SAMPLES);
+    init_dac(dac_sample_array);
+
+    setfreq(1000);
 
 	for(;;);
 }

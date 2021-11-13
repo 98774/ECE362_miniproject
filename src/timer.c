@@ -1,6 +1,6 @@
 #include "timer.h"
 #include "STM32f0xx.h"
-
+#define SAMPLES 30 //stores the number of samples per period
 
 /*******************************************************************************
 Author: Bryce Sasser
@@ -68,23 +68,24 @@ void TIM2_IRQHandler(void){
 /*******************************************************************************
 Author: Jonathon Snyder
 Date: 11/11/2021
-Description: initializes timer 7 and enables the interrupt.
+Description: initializes timer 7 and enables the DMA request.
 	The DAC subsytem uses this timer to drive the audio output.
 *******************************************************************************/
-/*
-void init_TIM7(void) {
-	int psc = 8000000 / RATE - 1;
-	RCC->APB1ENR |= RCC_APB1ENR_TIM7EN;
-	TIM7->ARR = 6-1;
-	TIM7->PSC = psc;
-	TIM7->CR1 |= TIM_CR1_CEN;
-	//NVIC->ISER |= NVIC_ISER_TIM7_IRQHandler;
-	//need to use EXTI to unmask
-	TIM7->DIER |= TIM_DIER_UIE;
-	NVIC->ISER[0] |= (1 << 18); //TIM7 Interrupt
+
+void init_tim7_dac(void) {
+	//Step 3: Configure timer
+	RCC->APB1ENR |= RCC_APB1ENR_TIM7EN; //enable RCC clock to tim 7
+
+	TIM7->ARR = (48000000 / (SAMPLES)) - 1; //trigger fre * samples / sec
+	TIM7->PSC = 0;
+	TIM7->CR2 &= ~TIM_CR2_MMS;
+	TIM7->CR2 |=  TIM_CR2_MMS_1; //enable update trigger on timer edge
+	TIM7->DIER |= TIM_DIER_UDE; //enable dma requests
+	TIM7->CR1 |= TIM_CR1_CEN; //enable timer
+
 
 }
-*/
+
 /*******************************************************************************
 Author: Jonathon Snyder
 Date: 11/11/2021

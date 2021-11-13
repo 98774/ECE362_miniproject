@@ -2,30 +2,45 @@
 #include "STM32f0xx.h"
 #include <math.h>
 
-//===========================================================================
-// 2.5 Output Sine Wave
-//===========================================================================
-#define N 1000
-#define RATE 20000
-short int wavetable[N];
-int step = 0;
-int offset = 0;
+#include "stm32f0xx.h"
+#include <math.h>
+#include <stdint.h>
+#define SAMPLES 30
 
-void init_wavetable(void) {
-	for(int i=0; i < N; i++)
-		wavetable[i] = 32767 * sin(2 * M_PI * i / N);
+
+
+/*******************************************************************************
+Author: Jonathon Snyder
+Date: 11/13/2021
+Description: Sets the frequency output for the DAC
+*******************************************************************************/
+void setfreq(float fre)
+{
+
+	TIM7->CR1 &= ~TIM_CR1_CEN; //enable timer
+
+	TIM7->ARR = (48000000 / (fre * SAMPLES)) - 1; //trigger fre * samples / sec
+
+	TIM7->CR1 |= TIM_CR1_CEN; //enable timer
 }
 
-void set_freq(float f) {
-	step = (f * N / 20000) * (1<<16); //assume F_DAC = 20k
-}
+/*******************************************************************************
+Author: Jonathon Snyder
+Date: 11/13/2021
+Description: initializes the dac subsystem and enables triggering from tim7
+*******************************************************************************/
 
-void setup_dac() {
-	RCC->AHBENR |= RCC_AHBENR_GPIOAEN; //enable clock to A
-	GPIOA->MODER |= 3<<(2*4); //set PA4 to analog
+void init_dac(uint16_t array[]) {
+	RCC->APB1ENR |= RCC_APB1ENR_DACEN; //enable clock to dac
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN; //enable GPIO A
+	GPIOA->MODER |= GPIO_MODER_MODER4; //Set PA4 to analog
 
-	RCC->APB1ENR |= RCC_APB1ENR_DACEN;
-	DAC->CR |= DAC_CR_TEN1;
-	DAC->CR |= DAC_CR_TSEL1;
-	DAC->CR |= DAC_CR_EN1;
+	DAC->CR |= DAC_CR_TSEL1_1; //Set up triggering on timer 7 0x010
+	DAC->CR |= DAC_CR_TEN1; //enable trigger
+	DAC->CR |= DAC_CR_EN1; //enable channel 1
+
+	for(int x=0; x < SAMPLES; x += 1)
+		array[x] = 2048 + 1952 * sin(2 * M_PI * x / SAMPLES);
+
+
 }
