@@ -7,7 +7,7 @@
 void setup_dma_ch3(uint16_t oled_msg[]) {
 	DMA1_Channel3->CCR &= ~DMA_CCR_EN;
 	DMA1_Channel3->CPAR = (uint32_t) &SPI1->DR;
-	DMA1_Channel3->CMAR = (uint32_t) oled_msg;
+	DMA1_Channel3->CMAR = (uint16_t) oled_msg;
 	DMA1_Channel3->CNDTR = 34;
 	DMA1_Channel3->CCR |= DMA_CCR_DIR;
 	DMA1_Channel3->CCR |= DMA_CCR_MINC;
