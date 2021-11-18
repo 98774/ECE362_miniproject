@@ -49,7 +49,7 @@ Description: initializes SPI1 for use with the OLED peripheral
 *******************************************************************************/
 void setup_spi1() {
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN; //enable in rcc
-
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
 	//set pins to 10 in MODER
 	GPIOA->MODER &= ~(GPIO_MODER_MODER5 | GPIO_MODER_MODER7 | GPIO_MODER_MODER15); //set top to 00xx0000
 	GPIOA->MODER |= GPIO_MODER_MODER5_1 | GPIO_MODER_MODER7_1 | GPIO_MODER_MODER15_1; //set 15, 5,6,7 to alternate functions
