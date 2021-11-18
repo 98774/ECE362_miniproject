@@ -1,11 +1,13 @@
-src/main.o: ../src/main.c \
- C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/stm32f0xx.h \
+src/spi.o: ../src/spi.c \
+ C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/spi.h \
+ C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/STM32f0xx.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/core/core_cm0.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/core/core_cmInstr.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/core/core_cmFunc.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/system_stm32f0xx.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_conf.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_adc.h \
+ C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/stm32f0xx.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_can.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_cec.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_crc.h \
@@ -27,15 +29,11 @@ src/main.o: ../src/main.c \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_tim.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_usart.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_wwdg.h \
- C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_misc.h \
- C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/dac.h \
- C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/spi.h \
- C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/STM32f0xx.h \
- C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/game.h \
- C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/timer.h \
- C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/dma.h
+ C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_misc.h
 
-C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/stm32f0xx.h:
+C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/spi.h:
+
+C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/STM32f0xx.h:
 
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/core/core_cm0.h:
 
@@ -48,6 +46,8 @@ C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/sy
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_conf.h:
 
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_adc.h:
+
+C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/stm32f0xx.h:
 
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_can.h:
 
@@ -92,15 +92,3 @@ C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Drive
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_wwdg.h:
 
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/StdPeriph_Driver/inc/stm32f0xx_misc.h:
-
-C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/dac.h:
-
-C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/spi.h:
-
-C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/STM32f0xx.h:
-
-C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/game.h:
-
-C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/timer.h:
-
-C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/dma.h:

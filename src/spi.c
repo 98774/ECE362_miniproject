@@ -3,19 +3,6 @@
 
 
 /*******************************************************************************
-Author: Jonathon Snyder
-Date: 11/11/2021
-Description: waits for n nanoseconds
-*******************************************************************************/
-void nano_wait(unsigned int n) {
-    asm(    "        mov r0,%0\n"
-            "repeat: sub r0,#83\n"
-            "        bgt repeat\n" : : "r"(n) : "r0", "cc");
-}
-
-
-
-/*******************************************************************************
 Author: Agrim Bharat
 Date: 11/11/2021
 Description: Initialize SPI2 (For reference, need to make changes to the configuration for our use case)

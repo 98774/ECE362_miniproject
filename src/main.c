@@ -24,6 +24,7 @@
 #include "spi.h"
 #include "game.h"
 #include "timer.h"
+#include "dma.h"
 
 /*******************************************************************************
 Author: Jonathon Snyder
@@ -60,6 +61,16 @@ Description: initialize all the pins for the for gpio use
 *******************************************************************************/
 
 #define SAMPLES 30
+/*******************************************************************************
+Author: Jonathon Snyder
+Date: 11/11/2021
+Description: waits for n nanoseconds
+*******************************************************************************/
+void nano_wait(unsigned int n) {
+    asm(    "        mov r0,%0\n"
+            "repeat: sub r0,#83\n"
+            "        bgt repeat\n" : : "r"(n) : "r0", "cc");
+}
 
 int main() {
 	//Storage and initialization for OLED
@@ -90,8 +101,31 @@ int main() {
     setup_dma_dac(dac_sample_array, SAMPLES);
     init_dac(dac_sample_array);
 
-    setfreq(1000);
+    setfreq(500);
 
-	for(;;);
+	for(;;){
+		//Plays major scale by setting frequency
+
+		setfreq(pow(2, (-12.0/12))*440);
+		nano_wait(1000000000);
+
+		setfreq(pow(2, (-10.0/12))*440);
+		nano_wait(1000000000);
+
+		setfreq(pow(2, (-8.0/12))*440);
+		nano_wait(1000000000);
+
+		setfreq(pow(2, (-7.0/12))*440);
+		nano_wait(1000000000);
+
+		setfreq(pow(2, (-5.0/12))*440);
+		nano_wait(1000000000);
+
+		setfreq(pow(2, (-3.0/12))*440);
+		nano_wait(1000000000);
+
+		setfreq(pow(2, (-1.0/12))*440);
+		nano_wait(1000000000);
+	}
 }
 #endif

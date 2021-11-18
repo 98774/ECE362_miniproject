@@ -32,8 +32,7 @@ src/main.o: ../src/main.c \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/spi.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/STM32f0xx.h \
  C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/game.h \
- C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/timer.h \
- C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/dma.h
+ C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/timer.h
 
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/stm32f0xx.h:
 
@@ -102,5 +101,3 @@ C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/CMSIS/device/ST
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/game.h:
 
 C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/timer.h:
-
-C:/Users/jsnyd/OneDrive\ -\ purdue.edu/School/ECE\ 36200/Project/inc/dma.h:
