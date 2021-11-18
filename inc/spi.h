@@ -1,5 +1,7 @@
 #include "STM32f0xx.h"
 
+void nano_wait(unsigned int n);
+
 //SPI functions for LED Matrix
 void init_spi2(void);
 

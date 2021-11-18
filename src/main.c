@@ -61,16 +61,7 @@ Description: initialize all the pins for the for gpio use
 *******************************************************************************/
 
 #define SAMPLES 30
-/*******************************************************************************
-Author: Jonathon Snyder
-Date: 11/11/2021
-Description: waits for n nanoseconds
-*******************************************************************************/
-void nano_wait(unsigned int n) {
-    asm(    "        mov r0,%0\n"
-            "repeat: sub r0,#83\n"
-            "        bgt repeat\n" : : "r"(n) : "r0", "cc");
-}
+
 
 int main() {
 	//Storage and initialization for OLED
