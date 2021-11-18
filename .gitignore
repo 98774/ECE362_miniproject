@@ -1,7 +1,10 @@
-/[Bb]inaries/
-/[Ii]ncludes/
-/StdPeriph_Driver/
-/[Ss]startup/
-/[Dd]ebug/
-/CMSIS/
-LinkerScript.Id
+.cproject\
+.project\
+.settings\
+CMSIS\
+Debug\
+LinkerScript.ld
+"Project Run.cfg"
+Release\
+startup\
+StdPeriph_Driver\
