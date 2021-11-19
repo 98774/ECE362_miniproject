@@ -77,7 +77,7 @@ int main() {
     enable_dma_ch3();
     */
 
-	init_buttons();
+
 
 	//Initialization for OLED
     setup_spi1();
@@ -87,6 +87,7 @@ int main() {
     spi_display1("Hello again,");
     spi_display2("Test display");
 
+    init_buttons();
     //Initializetion for DAC
     init_tim7_dac();
     setup_dma_dac(dac_sample_array, SAMPLES);
