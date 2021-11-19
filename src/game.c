@@ -5,7 +5,7 @@ void init_buttons(){
 
     // Turn on clock for the GPIO pins
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
-
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN;
     // Set the mode of GPIOC pins to be inputs
     GPIOC->MODER &= ~(GPIO_MODER_MODER4 |
     		GPIO_MODER_MODER5 |
@@ -49,6 +49,7 @@ void init_buttons(){
    			EXTI_FTSR_TR7 |
    			EXTI_FTSR_TR8;
 
+
     //Unmask interrupt
     NVIC->ISER[0] |= 1 << EXTI4_15_IRQn;
 }
@@ -82,7 +83,7 @@ void EXTI4_15_IRQHandler(void){
             (GPIOC->IDR & GPIO_IDR_6) && (GPIOC->IDR & GPIO_IDR_7) &&
             (GPIOC->IDR & GPIO_IDR_8)){
 
-        EXTI->PR &= ~(EXTI_PR_PR4 | EXTI_PR_PR5 | EXTI_PR_PR6 | EXTI_PR_PR7
+        EXTI->PR |= (EXTI_PR_PR4 | EXTI_PR_PR5 | EXTI_PR_PR6 | EXTI_PR_PR7
                 | EXTI_PR_PR8);
 
     }

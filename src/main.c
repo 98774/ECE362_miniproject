@@ -78,7 +78,6 @@ int main() {
     */
 
 
-
 	//Initialization for OLED
     setup_spi1();
     spi_init_oled();
