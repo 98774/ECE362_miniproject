@@ -1,0 +1,10 @@
+.cproject\
+.project\
+.settings\
+CMSIS\
+Debug\
+LinkerScript.ld
+"Project Run.cfg"
+Release\
+startup\
+StdPeriph_Driver\
