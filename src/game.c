@@ -6,6 +6,7 @@ void init_buttons(){
     // Turn on clock for the GPIO pins
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN;
+
     // Set the mode of GPIOC pins to be inputs
     GPIOC->MODER &= ~(GPIO_MODER_MODER4 |
     		GPIO_MODER_MODER5 |
