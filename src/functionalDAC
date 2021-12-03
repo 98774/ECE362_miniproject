@@ -325,7 +325,7 @@ void Print_Header(uint8_t *header)
 uint8_t header[44];
 uint8_t data[BUFFSIZE];
 uint8_t data2[BUFFSIZE];
-UINT br = BUFFSIZE; //stores the number of bytes read
+UINT br; //stores the number of bytes read
 FIL fp; //File object to be returned
 FRESULT fr; //return code of f_open
 char *fileName;
@@ -365,10 +365,54 @@ void Swap_Bytes(uint16_t *data){
     }
 }
 
+void Swap_Array(uint8_t *data){
+    DMA1_Channel3->CMAR = (uint32_t) data;
+}
+
+void Init_Play_Devices(){
+   RCC->APB2ENR |= RCC_APB2ENR_TIM15EN; //enable RCC clock to tim 7
+   RCC->APB1ENR |= RCC_APB1ENR_DACEN; //enable clock to dac
+   RCC->AHBENR |= RCC_AHBENR_DMA1EN; //enable clock to dma
+   RCC->AHBENR |= RCC_AHBENR_GPIOAEN; //enable GPIO A
+   GPIOA->MODER |= GPIO_MODER_MODER4; //Set PA4 to analog
+
+   //Configure DAC channel 1 to be triggered by TIM15 TRGO
+   DAC->CR |= DAC_CR_TSEL1_1 |DAC_CR_TSEL1_0;//Set up triggering on timer 15 0x011
+   DAC->CR |= DAC_CR_TEN1; //enable trigger
+
+   //Configure DMA to transfer 512 bytes from data to DAC
+   DMA1_Channel3->CCR &= ~DMA_CCR_EN; //disable dma to configure
+   DMA1_Channel3->CCR &= ~DMA_CCR_MSIZE;
+   DMA1_Channel3->CCR &= ~DMA_CCR_PSIZE;
+   DMA1_Channel3->CCR |= DMA_CCR_DIR  | //set mem to peripheral
+                         DMA_CCR_MINC | //set memory address increment
+                         DMA_CCR_CIRC |
+                         DMA_CCR_TCIE;
+
+   DMA1_Channel3->CNDTR = BUFFSIZE;
+   DMA1_Channel3->CMAR = (uint32_t) data;
+   DMA1_Channel3->CPAR = (uint32_t) &(DAC->DHR8R1);
+
+   //Enable DMA channel3
+   DMA1_Channel3->CCR |= DMA_CCR_EN;
+
+   //Enable DAC channel1 and DMA connection
+   DAC->CR |= DAC_CR_DMAEN1;
+   //DAC->CR |= DAC_CR_DMAUDRIE1; //enable dma underrun innterrupt
+   DAC->CR |= DAC_CR_EN1; //enable channel 1
+
+   //Enable devices
+   //Step 3: Configure timer
+   TIM15->PSC = 0;
+   TIM15->CR2 &= ~TIM_CR2_MMS;
+   TIM15->CR2 |=  TIM_CR2_MMS_1; //enable update trigger on timer edge
+}
+
 void play( int argc, char *argv[]){
     //argv is array that contains string filename
     FIL fp; //File object to be returned
     FRESULT fr; //return code of f_open
+    Init_Play_Devices();
     fileName = argv[1];
     fr = f_open(&fp, fileName, FA_READ|FA_OPEN_EXISTING);
     if (fr) {
@@ -393,10 +437,11 @@ void play( int argc, char *argv[]){
     //waveDataLength = 9000000;
     printf("wavDataLeng: %lu\n", waveDataLength);
     //so we know we have a valid file
-    Setup_TIM15(sampRate); //set transfer frequency based on samples and start transfer
 
-    br = BUFFSIZE; //initialize loop
-    //perform the continuous updates
+    //set up configuration
+    Configure_DMA1CH3(data, sampSize);
+    Setup_TIM15(sampRate); //set transfer frequency based on samples and start transfer
+    br = BUFFSIZE;
     while(br == BUFFSIZE){
 
         //read into second array
@@ -410,7 +455,7 @@ void play( int argc, char *argv[]){
         if(sampSize == 16)
             Swap_Bytes(data2);
 
-        Configure_DMA1CH3(data, sampSize);
+
         //wait for the first transfer to complete
         //printf("Before iteration. Data left: %lu\n", waveDataLength);
         while(!(DMA1->ISR & DMA_ISR_TCIF3));
@@ -418,7 +463,8 @@ void play( int argc, char *argv[]){
 
         //if less than BUFFSIZE elements left, set to 0
         waveDataLength = (waveDataLength > BUFFSIZE ? waveDataLength - BUFFSIZE : 0);
-        Configure_DMA1CH3(data2, sampSize);
+        //Configure_DMA1CH3(data2, sampSize);
+        Swap_Array(data2);
         //printf("After 1. Data left: %d\n", waveDataLength);
 
         //read into first array
@@ -439,9 +485,9 @@ void play( int argc, char *argv[]){
 
         //if less than BUFFSIZE elements left, set to 0
         waveDataLength = (waveDataLength > BUFFSIZE ? waveDataLength - BUFFSIZE : 0);
-        Configure_DMA1CH3(data, sampSize); //set back to first array
-
-       // printf("Finished iteration. Data left: %d\n", waveDataLength);
+        //Configure_DMA1CH3(data, sampSize); //set back to first array
+        Swap_Array(data);
+        // printf("Finished iteration. Data left: %d\n", waveDataLength);
     }
 
     DMA1_Channel3->CCR &= ~DMA_CCR_EN; //song complete
@@ -456,47 +502,6 @@ struct commands_t usercmds[] = {
 
 int main() {
     //Step 1.1
-        RCC->APB2ENR |= RCC_APB2ENR_TIM15EN; //enable RCC clock to tim 7
-        RCC->APB1ENR |= RCC_APB1ENR_DACEN; //enable clock to dac
-        RCC->AHBENR |= RCC_AHBENR_DMA1EN; //enable clock to dma
-        RCC->AHBENR |= RCC_AHBENR_GPIOAEN; //enable GPIO A
-        GPIOA->MODER |= GPIO_MODER_MODER4; //Set PA4 to analog
-
-        //Configure DAC channel 1 to be triggered by TIM15 TRGO
-        DAC->CR |= DAC_CR_TSEL1_1 |DAC_CR_TSEL1_0;//Set up triggering on timer 15 0x011
-        DAC->CR |= DAC_CR_TEN1; //enable trigger
-
-        //Configure DMA to transfer 512 bytes from data to DAC
-        DMA1_Channel3->CCR &= ~DMA_CCR_EN; //disable dma to configure
-        DMA1_Channel3->CCR &= ~DMA_CCR_MSIZE;
-        DMA1_Channel3->CCR &= ~DMA_CCR_PSIZE;
-        DMA1_Channel3->CCR |= DMA_CCR_DIR  | //set mem to peripheral
-                              DMA_CCR_MINC | //set memory address increment
-                              //DMA_CCR_PSIZE_0 | //set psize to 16 bits
-                              //DMA_CCR_MSIZE_0 |
-                              DMA_CCR_TCIE;
-
-        DMA1_Channel3->CNDTR = BUFFSIZE;
-        DMA1_Channel3->CMAR = (uint32_t) data;
-        DMA1_Channel3->CPAR = (uint32_t) &(DAC->DHR8R1);
-
-        //Enable DMA channel3
-        DMA1_Channel3->CCR |= DMA_CCR_EN;
-
-        //Enable DAC channel1 and DMA connection
-        DAC->CR |= DAC_CR_DMAEN1;
-        //DAC->CR |= DAC_CR_DMAUDRIE1; //enable dma underrun innterrupt
-        DAC->CR |= DAC_CR_EN1; //enable channel 1
-
-        //DAC channel 1 output already enabled above
-
-
-
-        //Enable devices
-        //Step 3: Configure timer
-        TIM15->PSC = 0;
-        TIM15->CR2 &= ~TIM_CR2_MMS;
-        TIM15->CR2 |=  TIM_CR2_MMS_1; //enable update trigger on timer edge
 
     init_usart5();
     enable_tty_interrupt();
