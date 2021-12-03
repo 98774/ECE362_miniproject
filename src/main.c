@@ -120,3 +120,47 @@ int main() {
 	}
 }
 #endif
+
+/*JONATHON'S CODE FOR DAC PLAYBACK
+Need to incorporate this into main
+
+#include "stm32f0xx.h"
+
+#define STEP25
+#if defined(STEP25)
+#include <stdio.h>
+#include "ff.h"
+#include "sdcard.h"
+
+//relevant constants for sdcard wav file
+#define BUFFSIZE 4000
+uint8_t header[44];
+uint8_t data[BUFFSIZE];
+uint8_t data2[BUFFSIZE];
+UINT br; //stores the number of bytes read
+FIL fp; //File object to be returned
+FRESULT fr; //return code of f_open
+char *fileName;
+FATFS fs_storage;
+int main() {
+
+
+    FATFS *fs = &fs_storage;
+    f_mount(fs, "", 1);
+
+    Init_Play_Devices(data);
+    uint16_t sampSize = play("16bit.wav\0", header, data, data2, &fp, &br);
+    FIL fstart = fp;
+    int currArr = 1; //stores which array we're in
+
+    for(;;){
+        if(DMA1->ISR & DMA_ISR_TCIF3){
+            currArr = Update_Array(currArr, data, data2, &fp, &br, sampSize, fstart);
+        }
+    }
+
+
+}
+
+*/
+
