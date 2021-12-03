@@ -1,0 +1,657 @@
+/**
+  ******************************************************************************
+  * @file    main.c
+  * @author  Ac6
+  * @version V1.0
+  * @date    01-December-2013
+  * @brief   Default main function.
+  ******************************************************************************
+*/
+
+
+#include "stm32f0xx.h"
+
+void init_usart5(){
+    RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //IOPCEN
+    RCC->AHBENR |= RCC_AHBENR_GPIODEN; //IOPDEN
+    RCC->APB1ENR |= RCC_APB1ENR_USART5EN;
+
+    GPIOC->MODER &= ~0x03000000;
+    GPIOC->MODER |= 0x02000000;
+    GPIOD->MODER &= ~0x00000030;
+    GPIOD->MODER |= 0x00000020;
+
+    GPIOC->AFR[1] &= ~0x000f0000;
+    GPIOC->AFR[1] |= 0x00020000; //configure to USART5_TX
+    GPIOD->AFR[0] &= ~0x00000f00;
+    GPIOD->AFR[0] |= 0x00000200; //configure to USART5_RX
+
+    USART5->CR1 &= ~USART_CR1_UE; //Disable usart5
+
+    //Clear bit 12 and 28 to set word size to 8 bits
+    USART5->CR1 &= ~USART_CR1_M;
+    USART5->CR1 &= ~USART_CR1_M << 16; //clear bit 28
+
+    USART5->CR2 &= ~USART_CR2_STOP; // set to 1 stop bit
+
+    USART5->CR1 &= ~USART_CR1_PCE; //disable parity
+
+    USART5->CR1 &= ~USART_CR1_OVER8; //set 16 times oversampling
+
+    USART5->BRR = 0x01A1; //Set baud rate to 115.11 (aprox 115.2)
+
+    USART5->CR1 |= USART_CR1_TE; //enable the Tx pin
+    USART5->CR1 |= USART_CR1_RE; //enable the Rx pin
+
+    USART5->CR1 |= USART_CR1_UE; //enable the usart
+
+    //Wait for TE and RE to be acknowledged
+    while(!(USART5->ISR & USART_ISR_TEACK));
+    while(!(USART5->ISR & USART_ISR_REACK));
+}
+
+//#define STEP21
+#if defined(STEP21)
+int main(void)
+{
+    init_usart5();
+    for(;;){
+        while(!(USART5->ISR & USART_ISR_RXNE));
+        char c = USART5->RDR;
+        while(!(USART5->ISR & USART_ISR_TXE));
+        USART5->TDR = c;
+
+    }
+}
+#endif
+
+//#define STEP22
+#if defined(STEP22)
+#include <stdio.h>
+int __io_putchar(int c){
+    //if a new line is passed, insert a carriage return, then new line
+    if(c == '\n')
+    {
+        while(!(USART5->ISR & USART_ISR_TXE));
+        USART5->TDR = '\r';
+    }
+
+    while(!(USART5->ISR & USART_ISR_TXE));
+    USART5->TDR = c;
+    return c;
+}
+
+int __io_getchar(void) {
+    while (!(USART5->ISR & USART_ISR_RXNE));
+    char c = USART5->RDR;
+    if(c == '\r')
+        c = '\n';
+
+    putchar(c); //write c to the serial terminal
+
+    return c;
+}
+
+int main() {
+    init_usart5();
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+    printf("Enter your name: ");
+    char name[80];
+    fgets(name, 80, stdin);
+    printf("Your name is %s\n", name);
+    printf("Type any characters.\n");
+    for(;;) {
+        char c = getchar();
+        putchar(c);
+    }
+}
+#endif
+
+//========================================================
+//STEP 2.3
+//========================================================
+
+//#define STEP23
+#if defined(STEP23)
+#include <stdio.h>
+
+#include "fifo.h"
+#include "tty.h"
+
+int __io_putchar(int c){
+    //if a new line is passed, insert a carriage return, then new line
+    if(c == '\n')
+    {
+        while(!(USART5->ISR & USART_ISR_TXE));
+        USART5->TDR = '\r';
+    }
+
+    while(!(USART5->ISR & USART_ISR_TXE));
+    USART5->TDR = c;
+    return c;
+}
+
+int __io_getchar(void) {
+    return line_buffer_getchar();
+}
+
+int main() {
+    init_usart5();
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+    printf("Enter your name: ");
+    char name[80];
+    fgets(name, 80, stdin);
+    printf("Your name is %s\n", name);
+    printf("Type any characters.\n");
+    for(;;) {
+        char c = getchar();
+        putchar(c);
+    }
+}
+#endif
+
+//========================================================
+//STEP 2.4
+//========================================================
+
+//#define STEP24
+#if defined(STEP24)
+#include <stdio.h>
+
+#include "fifo.h"
+#include "tty.h"
+#define FIFOSIZE 16
+char serfifo[FIFOSIZE];
+int seroffset = 0;
+
+int interrupt_getchar(){
+    // Wait for a newline to complete the buffer.
+    while(fifo_newline(&input_fifo) == 0) {
+        asm volatile ("wfi"); //wait for an interrupt
+    }
+    // Return a character from the line buffer.
+    char ch = fifo_remove(&input_fifo);
+    return ch;
+}
+
+int __io_putchar(int c){
+    //if a new line is passed, insert a carriage return, then new line
+    if(c == '\n')
+    {
+        while(!(USART5->ISR & USART_ISR_TXE));
+        USART5->TDR = '\r';
+    }
+
+    while(!(USART5->ISR & USART_ISR_TXE));
+    USART5->TDR = c;
+    return c;
+}
+
+int __io_getchar(void) {
+    return interrupt_getchar();
+}
+
+void enable_tty_interrupt(){
+    USART5->CR1 |= USART_CR1_RXNEIE; //enable interrupt when RX not empty
+    USART5->CR3 |= USART_CR3_DMAR; //enable dma on receiver
+    NVIC->ISER[0] |= 1 << USART3_8_IRQn; // enable interrupt in table
+
+    //DMA Configuration
+    RCC->AHBENR |= RCC_AHBENR_DMA2EN;
+    DMA2->RMPCR |= DMA_RMPCR2_CH2_USART5_RX;
+    DMA2_Channel2->CCR &= ~DMA_CCR_EN; //disable DMA to configure
+
+    DMA2_Channel2->CMAR = (uint32_t) serfifo; //set location in memory
+    DMA2_Channel2->CPAR = (uint32_t) &(USART5->RDR); //set peripheral location
+    DMA2_Channel2->CNDTR = FIFOSIZE; //set num data
+    DMA2_Channel2->CCR &= ~DMA_CCR_DIR; //read from peripheral
+    DMA2_Channel2->CCR &= ~(DMA_CCR_TCIE | DMA_CCR_HTIE); //disable interrupts
+    DMA2_Channel2->CCR &= ~DMA_CCR_MSIZE; //set memory size to 8 bits
+    DMA2_Channel2->CCR &= ~DMA_CCR_PSIZE; //set peripheral size to 8 bits
+    DMA2_Channel2->CCR |= DMA_CCR_MINC; //increment memory address
+    DMA2_Channel2->CCR &= ~DMA_CCR_PINC; //dont increment peripheral address
+    DMA2_Channel2->CCR |= DMA_CCR_CIRC; //set circular mode
+    DMA2_Channel2->CCR &= ~DMA_CCR_MEM2MEM; //disable mem2mem
+
+    //reenable DMA
+    DMA2_Channel2->CCR |= DMA_CCR_EN;
+}
+
+
+void USART3_4_5_6_7_8_IRQHandler() {
+    //printf("First Char: %c\n", serfifo[seroffset]);
+    while(DMA2_Channel2->CNDTR != sizeof(serfifo) - seroffset){
+        if(!fifo_full(&input_fifo))
+            insert_echo_char(serfifo[seroffset]);
+        seroffset = (seroffset + 1) % sizeof(serfifo);
+    }
+    //printf("WHILE FINISHED\n");
+}
+
+int main() {
+    init_usart5();
+    enable_tty_interrupt();
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+    printf("Enter your name: ");
+    char name[80];
+    fgets(name, 80, stdin);
+    printf("Your name is %s\n", name);
+    printf("Type any characters.\n");
+    for(;;) {
+        char c = getchar();
+        putchar(c);
+    }
+}
+#endif
+
+#define STEP25
+#if defined(STEP25)
+#include <stdio.h>
+
+#include "fifo.h"
+#include "ff.h"
+#include "lcd.h"
+#include "tty.h"
+#include "commands.h"
+#define FIFOSIZE 16
+char serfifo[FIFOSIZE];
+int seroffset = 0;
+
+int interrupt_getchar(){
+    // Wait for a newline to complete the buffer.
+    while(fifo_newline(&input_fifo) == 0) {
+        asm volatile ("wfi"); //wait for an interrupt
+    }
+    // Return a character from the line buffer.
+    char ch = fifo_remove(&input_fifo);
+    return ch;
+}
+
+int __io_putchar(int c){
+    //if a new line is passed, insert a carriage return, then new line
+    if(c == '\n')
+    {
+        while(!(USART5->ISR & USART_ISR_TXE));
+        USART5->TDR = '\r';
+    }
+
+    while(!(USART5->ISR & USART_ISR_TXE));
+    USART5->TDR = c;
+    return c;
+}
+
+int __io_getchar(void) {
+    return interrupt_getchar();
+}
+
+void enable_tty_interrupt(){
+    USART5->CR1 |= USART_CR1_RXNEIE; //enable interrupt when RX not empty
+    USART5->CR3 |= USART_CR3_DMAR; //enable dma on receiver
+    NVIC->ISER[0] |= 1 << USART3_8_IRQn; // enable interrupt in table
+
+    //DMA Configuration
+    RCC->AHBENR |= RCC_AHBENR_DMA2EN;
+    DMA2->RMPCR |= DMA_RMPCR2_CH2_USART5_RX;
+    DMA2_Channel2->CCR &= ~DMA_CCR_EN; //disable DMA to configure
+
+    DMA2_Channel2->CMAR = (uint32_t) serfifo; //set location in memory
+    DMA2_Channel2->CPAR = (uint32_t) &(USART5->RDR); //set peripheral location
+    DMA2_Channel2->CNDTR = FIFOSIZE; //set num data
+    DMA2_Channel2->CCR &= ~DMA_CCR_DIR; //read from peripheral
+    DMA2_Channel2->CCR &= ~(DMA_CCR_TCIE | DMA_CCR_HTIE); //disable interrupts
+    DMA2_Channel2->CCR &= ~DMA_CCR_MSIZE; //set memory size to 8 bits
+    DMA2_Channel2->CCR &= ~DMA_CCR_PSIZE; //set peripheral size to 8 bits
+    DMA2_Channel2->CCR |= DMA_CCR_MINC; //increment memory address
+    DMA2_Channel2->CCR &= ~DMA_CCR_PINC; //dont increment peripheral address
+    DMA2_Channel2->CCR |= DMA_CCR_CIRC; //set circular mode
+    DMA2_Channel2->CCR &= ~DMA_CCR_MEM2MEM; //disable mem2mem
+
+    //reenable DMA
+    DMA2_Channel2->CCR |= DMA_CCR_EN;
+}
+
+
+void USART3_4_5_6_7_8_IRQHandler() {
+    //printf("First Char: %c\n", serfifo[seroffset]);
+    while(DMA2_Channel2->CNDTR != sizeof(serfifo) - seroffset){
+        if(!fifo_full(&input_fifo))
+            insert_echo_char(serfifo[seroffset]);
+        seroffset = (seroffset + 1) % sizeof(serfifo);
+    }
+    //printf("WHILE FINISHED\n");
+}
+
+void init_spi1_slow(){
+    RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
+    RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
+
+    //configures for alternate function and pb2 for output
+    GPIOB->MODER |= GPIO_MODER_MODER3_1 |
+            GPIO_MODER_MODER4_1 |
+            GPIO_MODER_MODER5_1;
+
+    //set af0 for pb 3 4 5
+    GPIOB->AFR[0] &= ~(GPIO_AFRL_AFR3 |
+            GPIO_AFRL_AFR4 |
+            GPIO_AFRL_AFR5);
+
+
+    //set baud rate as low as possible, configure as master
+    SPI1->CR1 |= SPI_CR1_BR | SPI_CR1_MSTR;
+    SPI1->CR1 |= SPI_CR1_SSM | SPI_CR1_SSI;
+
+    //data size goes to 8 by default but ill clear it anyways
+    //set  to invalid value so it goes to 8 bits
+    SPI1->CR2 &= ~SPI_CR2_DS;
+    SPI1->CR2 |= SPI_CR2_FRXTH; //set FIFO reception threshold
+
+    SPI1->CR1 |= SPI_CR1_SPE; //Enable SPI
+
+}
+
+//sets pb2 to 0 to enable sd card
+void enable_sdcard(){
+    GPIOB->BSRR |= GPIO_BSRR_BR_2;
+}
+
+//sets pb2 to 1 to disable sd card
+void disable_sdcard(){
+    GPIOB->BSRR |= GPIO_BSRR_BS_2;
+}
+
+void init_sdcard_io(){
+    init_spi1_slow();
+    GPIOB->MODER |= GPIO_MODER_MODER2_0;
+    disable_sdcard();
+}
+
+void sdcard_io_high_speed(){
+    SPI1->CR1 &= ~SPI_CR1_SPE; //disable clock
+
+    SPI1->CR1 &= ~SPI_CR1_BR; //reset baud rate bits
+    SPI1->CR1 |= SPI_CR1_BR_0; //sets divisor to 4 to get 48 / 4 = 12 MHz clock
+
+    SPI1->CR1 |= SPI_CR1_SPE; //reenable clock
+}
+
+void init_lcd_spi(){
+    //configure as outputs
+    GPIOB->MODER |= GPIO_MODER_MODER8_0 |
+            GPIO_MODER_MODER14_0 |
+            GPIO_MODER_MODER11_0;
+
+    init_spi1_slow();
+    sdcard_io_high_speed();
+
+}
+
+#include "commands.h"
+
+void add(int argc, char *argv[])
+{
+    int sum = 0;
+    for(int i=1; i < argc; i++) {
+        sum += strtol(argv[i], 0, 0);
+    }
+    printf("The sum is %d\n", sum);
+}
+
+void mul(int argc, char *argv[])
+{
+    int prod = 1;
+    for(int i=1; i < argc; i++) {
+        prod *= strtol(argv[i], 0, 0);
+    }
+    printf("The product is %d\n", prod);
+}
+
+uint32_t Get_4(uint8_t *byteAddr, char type){
+    uint32_t new = 0;
+
+        new |= byteAddr[0];
+        new |= byteAddr[1] << 8;
+        new |= byteAddr[2] << 16;
+        new |= byteAddr[3] << 24;
+    if(type == 'n'){
+        printf("%lu\n", new);
+    } else {
+        printf("%c%c%c%c\n", byteAddr[0], byteAddr[1], byteAddr[2], byteAddr[3]);
+    }
+
+    return new;
+}
+
+uint16_t Get_2(uint8_t *byteAddr, char type){
+    uint16_t new = 0;
+
+        new |= byteAddr[0];
+        new |= byteAddr[1] << 8;
+
+    if(type == 'n'){
+        printf("%lu\n", new);
+
+    } else {
+        printf("%c%c\n", byteAddr[0], byteAddr[1]);
+    }
+
+    return new;
+}
+
+void Print_Header(uint8_t *header)
+{
+//Header fields
+    printf("Header:\n");
+    Get_4(&header[0], 'w'); //chunk id
+    Get_4(&header[4], 'n'); //the number of bytes in the file
+    Get_4(&header[8], 'w'); //riff type id
+
+    printf("\nChunk 1 ID: ");
+    Get_4(&header[12], 'w'); //chunk1 id
+
+    printf("Chunk 1 data size:     ");
+    Get_4(&header[16], 'n');
+
+    printf("Format Tag:            ");
+    Get_2(&header[20], 'n');
+
+    printf("Num Channels:          ");
+    Get_2(&header[22], 'n');
+
+    printf("Sample Rate:           ");
+    Get_4(&header[24], 'n');
+
+    printf("Byte rate:             ");
+    Get_4(&header[28], 'n');
+
+    printf("Block Align:           ");
+    Get_2(&header[32], 'n');
+
+    printf("Bits per sample:       ");
+    Get_2(&header[34], 'n');
+
+    printf("\nChunk 2 ID:            ");
+    Get_4(&header[36], 'w');
+
+    printf("Chunk 2 data size:     ");
+    Get_4(&header[40], 'n');
+
+}
+
+#define BUFFSIZE 512
+uint8_t header[44];
+uint8_t data[BUFFSIZE];
+uint8_t data2[BUFFSIZE];
+UINT br = BUFFSIZE; //stores the number of bytes read
+FIL fp; //File object to be returned
+FRESULT fr; //return code of f_open
+char *fileName;
+void Setup_TIM15(int byteRate){
+    TIM15->CR1 |= TIM_CR2_MMS_1;
+    TIM15->PSC = 0;
+    TIM15->ARR = (48000000 / byteRate) - 1; //set to the sampling rate of the file
+    printf("BYTE RATE SET: %lu\n", 48000000 / (TIM15->ARR + 1) / (TIM15->PSC + 1));
+}
+
+void Configure_DMA1CH3(uint8_t *data, int size){
+    DMA1_Channel3->CCR &= ~DMA_CCR_EN;
+
+    DMA1_Channel3->CNDTR = BUFFSIZE;
+    DMA1_Channel3->CMAR = (uint32_t) data;
+    if(size == 16)
+        DMA1_Channel3->CPAR = (uint32_t) &(DAC->DHR12LD);
+    else
+        DMA1_Channel3->CPAR = (uint32_t) &(DAC->DHR8RD);
+
+    DMA1_Channel3->CCR |= DMA_CCR_EN;
+}
+
+void play( int argc, char *argv[]){
+    //argv is array that contains string filename
+    FIL fp; //File object to be returned
+    FRESULT fr; //return code of f_open
+    fileName = "8bit.wav";
+    fr = f_open(&fp, fileName, FA_READ|FA_OPEN_EXISTING);
+    if (fr) {
+        print_error(fr, fileName);
+        return;
+    }
+
+    //read in header information exit if errror
+    fr = f_read(&fp, header, 44, &br);
+    if (fr){
+        print_error(fr, argv[1]);
+        return;
+    }
+
+    //this is where we parse the header
+    Print_Header(header);
+
+    uint32_t byteRate = Get_4(&header[28], 'n');
+    uint16_t sampSize = Get_2(&header[34], 'n');
+    uint32_t waveDataLength = Get_4(&header[40], 'n'); //number of bytes to read
+
+    //waveDataLength = 9000000;
+    printf("wavDataLeng: %lu\n", waveDataLength);
+    //so we know we have a valid file
+    Setup_TIM15(byteRate); //set transfer frequency
+    TIM15->CR1 |= TIM_CR1_CEN; //start the transfer
+
+    br = BUFFSIZE; //initialize loop
+    //perform the continuous updates
+    while(br == BUFFSIZE){
+
+        //read into second array
+        fr = f_read(&fp, data2, BUFFSIZE, &br);
+        if (fr){
+            print_error(fr, argv[1]);
+            return;
+        }
+
+        //wait for the first transfer to complete
+        //printf("Before iteration. Data left: %lu\n", waveDataLength);
+        while(!(DMA1->ISR & DMA_ISR_TCIF3));
+        DMA1->IFCR |= DMA_IFCR_CTCIF3; //clear flag
+
+        //if less than BUFFSIZE elements left, set to 0
+        waveDataLength = (waveDataLength > BUFFSIZE ? waveDataLength - BUFFSIZE : 0);
+        Configure_DMA1CH3(data2, 8);
+        //printf("After 1. Data left: %d\n", waveDataLength);
+
+        //read into first array
+        fr = f_read(&fp, data, BUFFSIZE, &br);
+        if (fr){
+            print_error(fr, argv[1]);
+            return;
+        }
+
+        //wait for second transfer to complete
+        while(!(DMA1->ISR & DMA_ISR_TCIF3));
+        DMA1->IFCR |= DMA_IFCR_CTCIF3; //clear flag
+
+        //if less than BUFFSIZE elements left, set to 0
+        waveDataLength = (waveDataLength > BUFFSIZE ? waveDataLength - BUFFSIZE : 0);
+        Configure_DMA1CH3(data, 8); //set back to first array
+
+       // printf("Finished iteration. Data left: %d\n", waveDataLength);
+    }
+
+    DMA1_Channel3->CCR &= ~DMA_CCR_EN; //song complete
+}
+
+struct commands_t usercmds[] = {
+     { "add",    add },
+     { "mul",    mul },
+     { "play",   play},
+};
+
+int main() {
+    //Step 1.1
+        RCC->APB2ENR |= RCC_APB2ENR_TIM15EN; //enable RCC clock to tim 7
+        RCC->APB1ENR |= RCC_APB1ENR_DACEN; //enable clock to dac
+        RCC->AHBENR |= RCC_AHBENR_DMA1EN; //enable clock to dma
+        RCC->AHBENR |= RCC_AHBENR_GPIOAEN; //enable GPIO A
+        GPIOA->MODER |= GPIO_MODER_MODER4; //Set PA4 to analog
+
+        //Configure DAC channel 1 to be triggered by TIM15 TRGO
+        DAC->CR |= DAC_CR_TSEL1_1 |DAC_CR_TSEL1_0;//Set up triggering on timer 15 0x011
+        DAC->CR |= DAC_CR_TEN1; //enable trigger
+
+        //Configure DMA to transfer 512 bytes from data to DAC
+        DMA1_Channel3->CCR &= ~DMA_CCR_EN; //disable dma to configure
+        DMA1_Channel3->CCR &= ~DMA_CCR_MSIZE;
+        DMA1_Channel3->CCR &= ~DMA_CCR_PSIZE;
+        DMA1_Channel3->CCR |= DMA_CCR_DIR  | //set mem to peripheral
+                              DMA_CCR_MINC | //set memory address increment
+                              //DMA_CCR_PSIZE_0 | //set psize to 16 bits
+                              //DMA_CCR_MSIZE_0 |
+                              DMA_CCR_TCIE;
+
+        DMA1_Channel3->CNDTR = BUFFSIZE;
+        DMA1_Channel3->CMAR = (uint32_t) data;
+        DMA1_Channel3->CPAR = (uint32_t) &(DAC->DHR8R1);
+
+        //Enable DMA channel3
+        DMA1_Channel3->CCR |= DMA_CCR_EN;
+
+        //Enable DAC channel1 and DMA connection
+        DAC->CR |= DAC_CR_DMAEN1;
+        //DAC->CR |= DAC_CR_DMAUDRIE1; //enable dma underrun innterrupt
+        DAC->CR |= DAC_CR_EN1; //enable channel 1
+
+        //DAC channel 1 output already enabled above
+
+
+
+        //Enable devices
+        //Step 3: Configure timer
+        TIM15->PSC = 0;
+        TIM15->CR2 &= ~TIM_CR2_MMS;
+        TIM15->CR2 |=  TIM_CR2_MMS_1; //enable update trigger on timer edge
+
+        TIM15->CR1 |= TIM_CR1_CEN; //enable timer
+
+    init_usart5();
+    enable_tty_interrupt();
+    setbuf(stdin,0);
+    setbuf(stdout,0);
+    setbuf(stderr,0);
+
+    //mount the volume
+    FATFS fs_storage;
+    FATFS *fs = &fs_storage;
+    f_mount(fs, "", 1);
+
+    //run the play command
+    //char *f = "8bit.wav";
+    //play(1, &f);
+
+
+    command_shell();
+}
+#endif
