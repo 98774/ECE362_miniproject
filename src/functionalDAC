@@ -642,11 +642,6 @@ int main() {
     setbuf(stdout,0);
     setbuf(stderr,0);
 
-    //mount the volume
-    FATFS fs_storage;
-    FATFS *fs = &fs_storage;
-    f_mount(fs, "", 1);
-
     //run the play command
     //char *f = "8bit.wav";
     //play(1, &f);
