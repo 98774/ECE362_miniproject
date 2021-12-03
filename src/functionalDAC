@@ -247,35 +247,37 @@ void mul(int argc, char *argv[])
     printf("The product is %d\n", prod);
 }
 
-uint32_t Get_4(uint8_t *byteAddr, char type){
+uint32_t Get_4(uint8_t *byteAddr, char type, int print){
     uint32_t new = 0;
 
         new |= byteAddr[0];
         new |= byteAddr[1] << 8;
         new |= byteAddr[2] << 16;
         new |= byteAddr[3] << 24;
-    if(type == 'n'){
-        printf("%lu\n", new);
-    } else {
-        printf("%c%c%c%c\n", byteAddr[0], byteAddr[1], byteAddr[2], byteAddr[3]);
+    if(print){
+        if(type == 'n'){
+            printf("%lu\n", new);
+        } else {
+            printf("%c%c%c%c\n", byteAddr[0], byteAddr[1], byteAddr[2], byteAddr[3]);
+        }
     }
-
     return new;
 }
 
-uint16_t Get_2(uint8_t *byteAddr, char type){
+uint16_t Get_2(uint8_t *byteAddr, char type, int print){
     uint16_t new = 0;
 
         new |= byteAddr[0];
         new |= byteAddr[1] << 8;
 
-    if(type == 'n'){
-        printf("%lu\n", new);
+    if(print){
+        if(type == 'n'){
+            printf("%lu\n", new);
 
-    } else {
-        printf("%c%c\n", byteAddr[0], byteAddr[1]);
+        } else {
+            printf("%c%c\n", byteAddr[0], byteAddr[1]);
+        }
     }
-
     return new;
 }
 
@@ -283,67 +285,78 @@ void Print_Header(uint8_t *header)
 {
 //Header fields
     printf("Header:\n");
-    Get_4(&header[0], 'w'); //chunk id
-    Get_4(&header[4], 'n'); //the number of bytes in the file
-    Get_4(&header[8], 'w'); //riff type id
+    Get_4(&header[0], 'w', 1); //chunk id
+    Get_4(&header[4], 'n', 1); //the number of bytes in the file
+    Get_4(&header[8], 'w', 1); //riff type id
 
     printf("\nChunk 1 ID: ");
-    Get_4(&header[12], 'w'); //chunk1 id
+    Get_4(&header[12], 'w', 1); //chunk1 id
 
     printf("Chunk 1 data size:     ");
-    Get_4(&header[16], 'n');
+    Get_4(&header[16], 'n', 1);
 
     printf("Format Tag:            ");
-    Get_2(&header[20], 'n');
+    Get_2(&header[20], 'n', 1);
 
     printf("Num Channels:          ");
-    Get_2(&header[22], 'n');
+    Get_2(&header[22], 'n', 1);
 
     printf("Sample Rate:           ");
-    Get_4(&header[24], 'n');
+    Get_4(&header[24], 'n', 1);
 
     printf("Byte rate:             ");
-    Get_4(&header[28], 'n');
+    Get_4(&header[28], 'n', 1);
 
     printf("Block Align:           ");
-    Get_2(&header[32], 'n');
+    Get_2(&header[32], 'n', 1);
 
     printf("Bits per sample:       ");
-    Get_2(&header[34], 'n');
+    Get_2(&header[34], 'n', 1);
 
     printf("\nChunk 2 ID:            ");
-    Get_4(&header[36], 'w');
+    Get_4(&header[36], 'w', 1);
 
     printf("Chunk 2 data size:     ");
-    Get_4(&header[40], 'n');
+    Get_4(&header[40], 'n', 1);
 
 }
 
-#define BUFFSIZE 512
+#define BUFFSIZE 4000
 uint8_t header[44];
-uint8_t data[BUFFSIZE];
-uint8_t data2[BUFFSIZE];
+uint16_t data[BUFFSIZE];
+uint16_t data2[BUFFSIZE];
 UINT br = BUFFSIZE; //stores the number of bytes read
 FIL fp; //File object to be returned
 FRESULT fr; //return code of f_open
 char *fileName;
 void Setup_TIM15(int byteRate){
+    TIM15->CR1 &= ~TIM_CR1_CEN;
     TIM15->CR1 |= TIM_CR2_MMS_1;
     TIM15->PSC = 0;
     TIM15->ARR = (48000000 / byteRate) - 1; //set to the sampling rate of the file
-    printf("BYTE RATE SET: %lu\n", 48000000 / (TIM15->ARR + 1) / (TIM15->PSC + 1));
+    TIM15->CR1 |= TIM_CR1_CEN;
+    printf("SAMP RATE SET: %lu\n", 48000000 / (TIM15->ARR + 1) / (TIM15->PSC + 1));
 }
 
-void Configure_DMA1CH3(uint8_t *data, int size){
+void Configure_DMA1CH3(uint16_t *data, int size){
     DMA1_Channel3->CCR &= ~DMA_CCR_EN;
 
-    DMA1_Channel3->CNDTR = BUFFSIZE;
     DMA1_Channel3->CMAR = (uint32_t) data;
-    if(size == 16)
-        DMA1_Channel3->CPAR = (uint32_t) &(DAC->DHR12LD);
-    else
-        DMA1_Channel3->CPAR = (uint32_t) &(DAC->DHR8RD);
 
+    if(size == 16){
+        DMA1_Channel3->CPAR = (uint32_t) &(DAC->DHR12LD);
+        DMA1_Channel3->CNDTR = BUFFSIZE; //two bytes per sample
+        DMA1_Channel3->CCR |= DMA_CCR_MSIZE_0; //set memory size to 16
+        DMA1_Channel3->CCR |= DMA_CCR_PSIZE_0; //set memory size to 16
+
+    }else{
+
+        DMA1_Channel3->CPAR = (uint32_t) &(DAC->DHR8RD);
+        DMA1_Channel3->CNDTR = BUFFSIZE;
+        DMA1_Channel3->CCR &= ~DMA_CCR_MSIZE; //set memory size to 8
+        DMA1_Channel3->CCR &= ~DMA_CCR_PSIZE; //set peripheral size to 8
+
+    }
     DMA1_Channel3->CCR |= DMA_CCR_EN;
 }
 
@@ -351,7 +364,7 @@ void play( int argc, char *argv[]){
     //argv is array that contains string filename
     FIL fp; //File object to be returned
     FRESULT fr; //return code of f_open
-    fileName = "8bit.wav";
+    fileName = argv[1];
     fr = f_open(&fp, fileName, FA_READ|FA_OPEN_EXISTING);
     if (fr) {
         print_error(fr, fileName);
@@ -368,15 +381,14 @@ void play( int argc, char *argv[]){
     //this is where we parse the header
     Print_Header(header);
 
-    uint32_t byteRate = Get_4(&header[28], 'n');
-    uint16_t sampSize = Get_2(&header[34], 'n');
-    uint32_t waveDataLength = Get_4(&header[40], 'n'); //number of bytes to read
+    uint32_t sampRate = Get_4(&header[28], 'n', 0);
+    uint16_t sampSize = Get_2(&header[34], 'n', 0);
+    uint32_t waveDataLength = Get_4(&header[40], 'n', 0); //number of bytes to read
 
     //waveDataLength = 9000000;
     printf("wavDataLeng: %lu\n", waveDataLength);
     //so we know we have a valid file
-    Setup_TIM15(byteRate); //set transfer frequency
-    TIM15->CR1 |= TIM_CR1_CEN; //start the transfer
+    Setup_TIM15(sampRate); //set transfer frequency based on samples and start transfer
 
     br = BUFFSIZE; //initialize loop
     //perform the continuous updates
@@ -396,7 +408,7 @@ void play( int argc, char *argv[]){
 
         //if less than BUFFSIZE elements left, set to 0
         waveDataLength = (waveDataLength > BUFFSIZE ? waveDataLength - BUFFSIZE : 0);
-        Configure_DMA1CH3(data2, 8);
+        Configure_DMA1CH3(data2, sampSize);
         //printf("After 1. Data left: %d\n", waveDataLength);
 
         //read into first array
@@ -412,7 +424,7 @@ void play( int argc, char *argv[]){
 
         //if less than BUFFSIZE elements left, set to 0
         waveDataLength = (waveDataLength > BUFFSIZE ? waveDataLength - BUFFSIZE : 0);
-        Configure_DMA1CH3(data, 8); //set back to first array
+        Configure_DMA1CH3(data, sampSize); //set back to first array
 
        // printf("Finished iteration. Data left: %d\n", waveDataLength);
     }
@@ -469,8 +481,6 @@ int main() {
         TIM15->PSC = 0;
         TIM15->CR2 &= ~TIM_CR2_MMS;
         TIM15->CR2 |=  TIM_CR2_MMS_1; //enable update trigger on timer edge
-
-        TIM15->CR1 |= TIM_CR1_CEN; //enable timer
 
     init_usart5();
     enable_tty_interrupt();
