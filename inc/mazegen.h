@@ -9,17 +9,17 @@
 #define LEFT 2   //-x
 #define RIGHT 3  //+x
 #define OUTFILE "MAZE"
-#define WHITE 0xffff
-#define BLACK 0x0000
-#define RED   0xff00
+#define WHITE Draw_Cell(x-1, y-1, 0xffff)
+#define BLACK Draw_Cell(x-1, y-1, 0x0000)
+#define RED   Draw_Cell(x-1, y-1, 0xf800)
 
 #define nodeadend//generate a maze without any dead ends! (consequently, many solutions to maze)
 //#define prim    //enable this to generate mazes using prim's algorithm.
 #define backtrack//enable this to generate mazes using depth-first search. Don't enable both.
 //#define movie   //this option spams bitmaps to illustrate each step of generation.
 
-#define XSIZE 12
-#define YSIZE 16
+#define XSIZE 14
+#define YSIZE 19
 
 typedef struct cell{
 	bool in;  //Is this cell in the maze?
