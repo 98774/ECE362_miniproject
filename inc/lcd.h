@@ -66,6 +66,10 @@ extern lcd_dev_t lcddev;
 #define LGRAYBLUE   0XA651
 #define LBBLUE      0X2B12
 
+void init_spi1_slow();
+void lcd_io_high_speed();
+void init_lcd_spi();
+
 void LCD_Setup(void);
 void LCD_Init(void (*reset)(int), void (*select)(int), void (*reg_select)(int));
 void LCD_Clear(u16 Color);

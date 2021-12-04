@@ -62,8 +62,10 @@ Description: initialize all the pins for the for gpio use
 
 #include "ff.h"
 #include "sdcard.h"
+#include "mazegen.h"
+#include "lcd.h"
 
-//relevant constants for sdcard wav file
+//relevant constants for SD Card
 #define BUFFSIZE 4000
 uint8_t header[44];
 uint8_t data[BUFFSIZE];
@@ -73,6 +75,14 @@ FIL fp; //File object to be returned
 FRESULT fr; //return code of f_open
 char *fileName;
 FATFS fs_storage;
+
+//Constants for MAZE
+#define XSIZE 32
+#define YSIZE 24
+cell MAZE[XSIZE][YSIZE];
+
+
+//CONSTANTS FOR LCD
 
 int main() {
 	//Storage and initialization for OLED
@@ -84,12 +94,22 @@ int main() {
 	FIL fstart = fp;
 	int currArr = 1; //stores which array we're in
 
+	LCD_Setup(); //initialize the LCD
+	LCD_Clear(0x0f00);
+
 	init_buttons();
 
 	for(;;){
+		//DAC audio control
 		if(DMA1->ISR & DMA_ISR_TCIF3){
 			currArr = Update_Array(currArr, data, data2, &fp, &br, sampSize, fstart);
 		}
+
+		//Button Detection
+
+
+
+
     }
 }
 #endif
