@@ -8,7 +8,7 @@ https://en.wikipedia.org/wiki/User:Dllu/Maze
 Modified by Manas Tanneeru
 Modified by Jonathon Snyder
 ************************************/
-
+#include "stm32f0xx.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -20,13 +20,14 @@ cell MAZE[XSIZE][YSIZE];
 long numin=1;     //Number of cells in the maze.
 
 
-//int Build_Maze()
-//{
-//	srandom((unsigned int)time(NULL)); //seed random number generator with system time
-//	initialize(MAZE);      //initialize the maze
-//	generate(MAZE);        //generate the maze
-//	return 0;
-//}
+int Build_Maze()
+{
+	srandom((unsigned int) TIM15->CNT); //seed random number generator with system time
+	initialize(MAZE);      //initialize the maze
+	generate(MAZE);        //generate the maze
+	savebmp(1,1);
+	return 0;
+}
 
 void initialize(){
 	//Initialize the maze!
@@ -158,41 +159,17 @@ void generate(){
 }
 
 void savebmp(int xspecial, int yspecial){
-//	//save a bitmap file! the xspecial, yspecial pixel is coloured red.
-//	FILE * outfile;
+
 	int extrabytes, paddedsize;
 	int x, y, n;
 	int width=(XSIZE-1)*2-1;
 	int height=(YSIZE-1)*2-1;
-//
+
 	extrabytes = (4 - ((width * 3) % 4))%4;
-//
-//	char filename[200];
-//
-//	sprintf(filename, "%s_%dx%d_n%ld.jpg", OUTFILE, XSIZE, YSIZE, numin);
-	paddedsize = ((width * 3) + extrabytes) * height;
-//
-	unsigned int headers[13] = {paddedsize + 54, 0, 54, 40, width, height, 0, 0, paddedsize, 0, 0, 0, 0};
-//
-//	outfile = fopen(filename, "wb");
-//	fprintf(outfile, "BM");
 
-//	for (n = 0; n <= 5; n++){
-//	   fprintf(outfile, "%c", headers[n] & 0x000000FF);
-//	   fprintf(outfile, "%c", (headers[n] & 0x0000FF00) >> 8);
-//	   fprintf(outfile, "%c", (headers[n] & 0x00FF0000) >> 16);
-//	   fprintf(outfile, "%c", (headers[n] & (unsigned int) 0xFF000000) >> 24);
-//	}
+	//paddedsize = ((width * 3) + extrabytes) * height;
 
-//	fprintf(outfile, "%c", 1);fprintf(outfile, "%c", 0);
-//	fprintf(outfile, "%c", 24);fprintf(outfile, "%c", 0);
-
-//	for (n = 7; n <= 12; n++){
-//	   fprintf(outfile, "%c", headers[n] & 0x000000FF);
-//	   fprintf(outfile, "%c", (headers[n] & 0x0000FF00) >> 8);
-//	   fprintf(outfile, "%c", (headers[n] & 0x00FF0000) >> 16);
-//	   fprintf(outfile, "%c", (headers[n] & (unsigned int) 0xFF000000) >> 24);
-//	}
+//	unsigned int headers[13] = {paddedsize + 54, 0, 54, 40, width, height, 0, 0, paddedsize, 0, 0, 0, 0};
 
 	//Actual writing of data begins here:
 	for(y = 0; y <= height - 1; y++){
@@ -200,24 +177,18 @@ void savebmp(int xspecial, int yspecial){
 			if(x%2 == 1 && y%2 == 1){
 				if(x/2+1 == xspecial && y/2+1 == yspecial) RED;
 				else{
-					if(MAZE[x/2+1][y/2+1].in) Draw_Cell(x, y, WHITE); else Draw_Cell(x, y, BLACK);
+					if(MAZE[x/2+1][y/2+1].in) WHITE; else BLACK;
 				}
 			}else if(x%2 == 0 && y%2 == 0){
-				Draw_Cell(x, y, BLACK);
+				BLACK;
 			}else if(x%2 == 0 && y%2 == 1){
-				if(MAZE[x/2+1][y/2+1].left) Draw_Cell(x, y, BLACK); else Draw_Cell(x, y, WHITE);
+				if(MAZE[x/2+1][y/2+1].left) BLACK; else WHITE;
 			}else if(x%2 == 1 && y%2 == 0){
-				if(MAZE[x/2+1][y/2+1].up) Draw_Cell(x, y, BLACK); else Draw_Cell(x, y, WHITE);
+				if(MAZE[x/2+1][y/2+1].up) BLACK; else WHITE;
 			}
 		}
-//		if (extrabytes){     // See above - BMP lines must be of lengths divisible by 4.
-//			for (n = 1; n <= extrabytes; n++){
-//				fprintf(outfile, "%c", 0);
-//			}
-//		}
 	}
-//	printf("file printed: %s\n", filename);
-//	fclose(outfile);
-	return;
+
+    return;
 }
 
