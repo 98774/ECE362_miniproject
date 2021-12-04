@@ -7,8 +7,8 @@
 #include "stdlib.h"
 
 // shorthand notation for 8-bit and 16-bit unsigned integers
-typedef uint8_t u8;
 typedef uint16_t u16;
+typedef uint8_t u8;
 
 // The LCD device structure definition.
 //

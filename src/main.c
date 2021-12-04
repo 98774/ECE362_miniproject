@@ -64,6 +64,7 @@ Description: initialize all the pins for the for gpio use
 #include "sdcard.h"
 #include "mazegen.h"
 #include "lcd.h"
+#include "draw.h"
 
 //relevant constants for SD Card
 #define BUFFSIZE 4000
@@ -77,8 +78,6 @@ char *fileName;
 FATFS fs_storage;
 
 //Constants for MAZE
-#define XSIZE 24
-#define YSIZE 32
 cell MAZE[XSIZE][YSIZE];
 
 
@@ -100,24 +99,18 @@ int main() {
 	init_buttons();
 
 
-	void Draw_Grid(){
-		for(int x = 0; x < XSIZE; x++){
-			for(int y = 0; y < YSIZE; y++){
-				if(x % 2 == 0 && y % 2 == 0 || x % 2 && y % 2)
-					LCD_DrawFillRectangle(10*x, 10*y, 10 * (x + 1), 10 * (y + 1), RED);
+	//Build Maze
+	Build_Maze(MAZE);
+	Draw_Grid(MAZE);
 
-			}
-		}
-	}
 
-	Draw_Grid();
 	for(;;){
 		//DAC audio control
 		if(DMA1->ISR & DMA_ISR_TCIF3){
 			currArr = Update_Array(currArr, data, data2, &fp, &br, sampSize, fstart);
 		}
 
-		LCD_DrawFillRectangle(0, 0, 20, 10, RED);
+		//LCD_DrawFillRectangle(0, 0, 20, 10, RED);
 
 
 		//Button Detection
