@@ -11,7 +11,7 @@
 **
 **  Environment : System Workbench for MCU
 **
-**  Distribution: The file is distributed “as is,” without any warranty
+**  Distribution: The file is distributed ï¿½as is,ï¿½ without any warranty
 **                of any kind.
 **
 *****************************************************************************
@@ -59,7 +59,7 @@
 extern int errno;
 extern int __io_putchar(int ch) __attribute__((weak));
 extern int __io_getchar(void) __attribute__((weak));
-
+int __io_putchar(int ch);
 register char * stack_ptr asm("sp");
 
 char *__env[1] = { 0 };
@@ -98,6 +98,12 @@ int _read (int file, char *ptr, int len)
 	}
 
 return len;
+}
+
+int __io_putchar(int ch){
+	int i = 1;
+	i++;
+	return i;
 }
 
 int _write(int file, char *ptr, int len)
