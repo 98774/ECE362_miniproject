@@ -1,31 +1,6 @@
-/**
-  ******************************************************************************
-  * @file    main.c
-  * @author  Ac6
-  * @version V1.0
-  * @date    01-December-2013
-  * @brief   Default main function.
-  ******************************************************************************
-*/
-
-
 #include "stm32f0xx.h"
-			
-
-//========================================================
-//MAIN FUNCTIONS
-//========================================================
-
-#define MAIN
-#if defined(MAIN)
 #include <stdio.h>
-
-#include "dac.h"
-#include "spi.h"
-#include "game.h"
-#include "timer.h"
-#include "dma.h"
-
+			
 /*******************************************************************************
 Author: Jonathon Snyder
 Date: 11/11/2021
@@ -59,13 +34,21 @@ Date: 11/11/2021
 Description: initialize all the pins for the for gpio use
         the buttons will be active low and trigger interrupt on falling edge
 *******************************************************************************/
+#define MAIN
+#if defined(MAIN)
 
+#include "dac.h"
+#include "spi.h"
+#include "game.h"
+#include "timer.h"
+#include "dma.h"
 #include "ff.h"
 #include "sdcard.h"
 #include "mazegen.h"
 #include "lcd.h"
 #include "draw.h"
-#include <time.h>
+
+
 //relevant constants for SD Card
 #define BUFFSIZE 4000
 uint8_t header[44];
@@ -82,7 +65,6 @@ extern cell MAZE[XSIZE][YSIZE];
 
 
 //CONSTANTS FOR LCD
-
 int main() {
 	//Storage and initialization for OLED
 	FATFS *fs = &fs_storage;
@@ -94,18 +76,17 @@ int main() {
 	int currArr = 1; //stores which array we're in
 
 	LCD_Setup(); //initialize the LCD
-	LCD_Clear(0x0000);
+	LCD_Clear(BLACK);
 
 	init_buttons();
 
 
 	//Build Maze
-	//Build_Maze(MAZE);
-	//Draw_Grid(MAZE);
-	srandom((unsigned int) TIM15->CNT); //seed random number generator with system time
-	initialize();      //initialize the maze
-	generate();        //generate the maze
-	savebmp(0, 0);
+	Build_Maze();
+	LCD_DrawFillRectangle((OFFSETX + SIZE * (XSIZE - 2) * 2),
+	        0,
+	        (OFFSETX + SIZE * (XSIZE - 2) * 2) + XSIZE,
+	        (OFFSETY + SIZE * (YSIZE - 2) * 2) + YSIZE, LIGHTGREEN);
 
 
 	for(;;){
@@ -113,14 +94,6 @@ int main() {
 		if(DMA1->ISR & DMA_ISR_TCIF3){
 			currArr = Update_Array(currArr, data, data2, &fp, &br, sampSize, fstart);
 		}
-
-		//LCD_DrawFillRectangle(0, 0, 20, 10, RED);
-
-
-		//Button Detection
-
-
-
 
     }
 }
