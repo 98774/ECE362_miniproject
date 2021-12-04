@@ -6,11 +6,14 @@ https://en.wikipedia.org/wiki/User:Dllu/Maze
 *************************************/
 /************************************
 Modified by Manas Tanneeru
+Modified by Jonathon Snyder
 ************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
+#include "mazegen.h"
 
 #define UP 0     //-y
 #define DOWN 1   //+y
@@ -30,24 +33,11 @@ long numin=1;     //Number of cells in the maze.
 #define XSIZE 32
 #define YSIZE 24
 
-void initialize();
-void generate();
-void savebmp(int xspecial, int yspecial);
-
-typedef struct cell{
-	bool in;  //Is this cell in the maze?
-	bool up;  //Does the wall above this cell exist?
-	bool left;//Does the wall to the left of this cell exist?
-	int prevx, prevy; //The coordinates of the previous cell, used for backtracking.
-}cell;
-
-cell MAZE[XSIZE][YSIZE];
-
-int main()
+int Build_Maze(cell *MAZE[])
 {
 	srand((unsigned int)time(NULL)); //seed random number generator with system time
-	initialize();      //initialize the maze
-	generate();        //generate the maze
+	initialize(MAZE);      //initialize the maze
+	generate(MAZE);        //generate the maze
 #ifdef movie
 	for(int i=1;i<10;i++){
 		numin++;
@@ -55,12 +45,12 @@ int main()
 	}
 //#else movie
 #else
-	savebmp(0,0);
+	savebmp(MAZE, 0,0);
 #endif
 	return 0;
 }
 
-void initialize(){
+void initialize(cell *MAZE[]){
 	//Initialize the maze!
 	for(int x=0;x<XSIZE;x++){
 		for(int y=0;y<YSIZE;y++){
@@ -74,7 +64,7 @@ void initialize(){
 	return;
 }
 
-void generate(){
+void generate(cell *MAZE[]){
 	int xcur=1, ycur=1;//start growing from the corner. It could theoretically start growing from anywhere, doesn't matter.
 	MAZE[xcur][ycur].in = 1;
 	int whichway;
@@ -189,7 +179,7 @@ void generate(){
 	return;
 }
 
-void savebmp(int xspecial, int yspecial){
+void savebmp(cell *MAZE[], int xspecial, int yspecial){
 	//save a bitmap file! the xspecial, yspecial pixel is coloured red.
 	FILE * outfile;
 	int extrabytes, paddedsize;
@@ -252,3 +242,4 @@ void savebmp(int xspecial, int yspecial){
 	fclose(outfile);
 	return;
 }
+

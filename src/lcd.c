@@ -24,6 +24,51 @@ lcd_dev_t lcddev;
 #define DC_HIGH do { GPIOB->BSRR = GPIO_BSRR_BS_10; } while(0)
 #define DC_LOW  do { GPIOB->BSRR = GPIO_BSRR_BR_10; } while(0)
 
+//=============================================================================
+//INIT FUNCTIONS ADDED BY Jonathon
+//=============================================================================
+void init_spi1_slow(){
+    RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
+    RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
+    //configures for alternate function and pb2 for output
+    GPIOB->MODER |= GPIO_MODER_MODER3_1 |
+            GPIO_MODER_MODER4_1 |
+            GPIO_MODER_MODER5_1;
+    //set af0 for pb 3 4 5
+    GPIOB->AFR[0] &= ~(GPIO_AFRL_AFR3 |
+            GPIO_AFRL_AFR4 |
+            GPIO_AFRL_AFR5);
+    //set baud rate as low as possible, configure as master
+    SPI1->CR1 |= SPI_CR1_BR | SPI_CR1_MSTR;
+    SPI1->CR1 |= SPI_CR1_SSM | SPI_CR1_SSI;
+    //data size goes to 8 by default but ill clear it anyways
+    //set  to invalid value so it goes to 8 bits
+    SPI1->CR2 &= ~SPI_CR2_DS;
+    SPI1->CR2 |= SPI_CR2_FRXTH; //set FIFO reception threshold
+    SPI1->CR1 |= SPI_CR1_SPE; //Enable SPI
+}
+void lcd_io_high_speed(){
+    SPI1->CR1 &= ~SPI_CR1_SPE; //disable clock
+    SPI1->CR1 &= ~SPI_CR1_BR; //reset baud rate bits
+    SPI1->CR1 |= SPI_CR1_BR_0; //sets divisor to 4 to get 48 / 4 = 12 MHz clock
+    SPI1->CR1 |= SPI_CR1_SPE; //reenable clock
+}
+void init_lcd_spi(){
+    //configure as outputs
+    GPIOB->MODER |= GPIO_MODER_MODER8_0 |
+            GPIO_MODER_MODER9_0 |
+            GPIO_MODER_MODER10_0;
+    init_spi1_slow();
+    lcd_io_high_speed();
+}
+//==============================================================================
+//END JONATHON'S CODE
+//==============================================================================
+
+
+
+
+
 // Set the CS pin low if val is non-zero.
 // Note that when CS is being set high again, wait on SPI to not be busy.
 static void tft_select(int val)
@@ -342,11 +387,6 @@ void LCD_Init(void (*reset)(int), void (*select)(int), void (*reg_select)(int))
 
     LCD_direction(USE_HORIZONTAL);
     lcddev.select(0);
-}
-
-__attribute((weak)) void init_lcd_spi(void)
-{
-    printf("init_lcd_spi() not defined.");
 }
 
 void LCD_Setup() {
