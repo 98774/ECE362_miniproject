@@ -65,7 +65,7 @@ Description: initialize all the pins for the for gpio use
 #include "mazegen.h"
 #include "lcd.h"
 #include "draw.h"
-
+#include <time.h>
 //relevant constants for SD Card
 #define BUFFSIZE 4000
 uint8_t header[44];
@@ -78,7 +78,7 @@ char *fileName;
 FATFS fs_storage;
 
 //Constants for MAZE
-cell MAZE[XSIZE][YSIZE];
+extern cell MAZE[XSIZE][YSIZE];
 
 
 //CONSTANTS FOR LCD
@@ -100,8 +100,12 @@ int main() {
 
 
 	//Build Maze
-	Build_Maze(MAZE);
-	Draw_Grid(MAZE);
+	//Build_Maze(MAZE);
+	//Draw_Grid(MAZE);
+	srandom((unsigned int) TIM15->CNT); //seed random number generator with system time
+	initialize();      //initialize the maze
+	generate();        //generate the maze
+	savebmp(0, 0);
 
 
 	for(;;){

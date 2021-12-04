@@ -11,3 +11,7 @@ void Draw_Grid(cell *MAZE[]){
 		}
 	}
 }
+
+void Draw_Cell(int x, int y, int color){
+	LCD_DrawFillRectangle(10*x, 10*y, 10 * (x + 1), 10 * (y + 1), color);
+}

@@ -5,7 +5,7 @@
 #ifndef __LCD_H
 #define __LCD_H
 #include "stdlib.h"
-
+#include "stm32f0xx.h"
 // shorthand notation for 8-bit and 16-bit unsigned integers
 typedef uint16_t u16;
 typedef uint8_t u8;
