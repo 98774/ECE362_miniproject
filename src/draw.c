@@ -27,8 +27,8 @@ void Draw_Start_Screen()
 	char *info2 = "the time runs out!";
 	LCD_Clear(MAGENTA);
 	LCD_DrawString(75, 20, BLACK, WHITE, title, LARGE, 0);
-	LCD_DrawString(10, 40, BLACK, WHITE, info, LARGE, 0);
-	LCD_DrawString(50, 56, BLACK, WHITE, info2, LARGE, 0);
+	LCD_DrawString(10, 40, BLACK, RED, info, LARGE, 0);
+	LCD_DrawString(50, 56, BLACK, RED, info2, LARGE, 0);
 }
 
 void Draw_Timebar(){

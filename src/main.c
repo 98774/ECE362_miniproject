@@ -119,6 +119,7 @@ int main() {
 				gameStarted = 1;
 				Build_Maze();
 				Draw_Timebar();
+				init_TIM6();
 			} else {
 				//game running
 			}

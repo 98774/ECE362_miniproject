@@ -73,7 +73,7 @@ void EXTI4_15_IRQHandler(void){
 	}
 	if (~GPIOC->IDR & GPIO_IDR_7){
 		//Left Down
-	;
+
 	}
 	if (~GPIOC->IDR & GPIO_IDR_8){
 		//Left Up
