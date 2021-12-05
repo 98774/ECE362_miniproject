@@ -2,6 +2,8 @@
 #include "draw.h"
 #include "lcd.h"
 
+#define SMALL 12
+#define LARGE 16
 
 
 void Draw_Grid(cell *MAZE[]){
@@ -16,4 +18,22 @@ void Draw_Grid(cell *MAZE[]){
 
 void Draw_Cell(int x, int y, int color){
 	LCD_DrawFillRectangle(SIZE*x+OFFSETX, SIZE*y+OFFSETY, SIZE*(x+1)+OFFSETX, SIZE*(y+1)+OFFSETY, color);
+}
+
+void Draw_Start_Screen()
+{
+	char *title = "MAZE RUNNER\0";
+	char *info = "Navigate to the goal before";
+	char *info2 = "the time runs out!";
+	LCD_Clear(MAGENTA);
+	LCD_DrawString(75, 20, BLACK, WHITE, title, LARGE, 0);
+	LCD_DrawString(10, 40, BLACK, WHITE, info, LARGE, 0);
+	LCD_DrawString(50, 56, BLACK, WHITE, info2, LARGE, 0);
+}
+
+void Draw_Timebar(){
+	LCD_DrawFillRectangle((OFFSETX + SIZE * (XSIZE - 2) * 2),
+	        0,
+	        (OFFSETX + SIZE * (XSIZE - 2) * 2) + XSIZE,
+	        (OFFSETY + SIZE * (YSIZE - 2) * 2) + YSIZE, LIGHTGREEN);
 }

@@ -70,10 +70,12 @@ int main() {
 	FATFS *fs = &fs_storage;
 	f_mount(fs, "", 1);
 
-	Init_Play_Devices(data);
-	uint16_t sampSize = play("16bit.wav\0", header, data, data2, &fp, &br);
+	//Init_Play_Devices(data);
+	//uint16_t sampSize = play("8bit.wav\0", header, data, data2, &fp, &br);
 	FIL fstart = fp;
 	int currArr = 1; //stores which array we're in
+	int gameStarted = 0;
+	uint16_t sampSize;
 
 	LCD_Setup(); //initialize the LCD
 	LCD_Clear(BLACK);
@@ -82,12 +84,11 @@ int main() {
 
 
 	//Build Maze
-	Build_Maze();
-	LCD_DrawFillRectangle((OFFSETX + SIZE * (XSIZE - 2) * 2),
-	        0,
-	        (OFFSETX + SIZE * (XSIZE - 2) * 2) + XSIZE,
-	        (OFFSETY + SIZE * (YSIZE - 2) * 2) + YSIZE, LIGHTGREEN);
+	Draw_Start_Screen();
+	//Build_Maze();
+	/*
 
+	*/
 
 	for(;;){
 		//DAC audio control
@@ -95,6 +96,40 @@ int main() {
 			currArr = Update_Array(currArr, data, data2, &fp, &br, sampSize, fstart);
 		}
 
+		if(!(GPIOC->IDR & GPIO_IDR_4)){
+			//UP
+		}
+
+
+		if(!(GPIOC->IDR & GPIO_IDR_5)){
+			//DOWN
+		}
+
+
+		if(!(GPIOC->IDR & GPIO_IDR_6)){
+			//LEFT
+		}
+
+
+		if(!(GPIOC->IDR & GPIO_IDR_7)){
+			//RIGHT
+		}
+
+		if(!(GPIOC->IDR & GPIO_IDR_8)){
+			if(!gameStarted){
+				//start game
+				gameStarted = 1;
+				Build_Maze();
+				Draw_Timebar();
+				Init_Play_Devices(data);
+				sampSize = play("8bit.wav\0", header, data, data2, &fp, &br);
+				fstart = fp;
+			//Build_Maze();
+
+			} else {
+				//game running
+			}
+		}
     }
 }
 #endif

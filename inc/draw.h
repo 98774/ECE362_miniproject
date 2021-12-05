@@ -8,5 +8,6 @@
 
 
 void Draw_Grid(cell *MAZE[]);
-
+void Draw_Start_Screen();
+void Draw_Timebar();
 #endif
