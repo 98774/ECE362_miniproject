@@ -59,10 +59,19 @@ FIL fp; //File object to be returned
 FRESULT fr; //return code of f_open
 char *fileName;
 FATFS fs_storage;
+int currArr = 1;
+uint16_t sampSize;
+FIL fstart;
 
 //Constants for MAZE
 extern cell MAZE[XSIZE][YSIZE];
 
+
+void DMA1_CH2_3_DMA2_CH1_2_IRQHandler(){
+	if(DMA1->ISR & DMA_ISR_TCIF3){
+		currArr = Update_Array(currArr, data, data2, &fp, &br, sampSize, fstart);
+	}
+}
 
 //CONSTANTS FOR LCD
 int main() {
@@ -70,31 +79,20 @@ int main() {
 	FATFS *fs = &fs_storage;
 	f_mount(fs, "", 1);
 
-	//Init_Play_Devices(data);
-	//uint16_t sampSize = play("8bit.wav\0", header, data, data2, &fp, &br);
-	FIL fstart = fp;
-	int currArr = 1; //stores which array we're in
+	Init_Play_Devices(data);
+	sampSize = play("8bit.wav\0", header, data, data2, &fp, &br);
+	fstart = fp;
 	int gameStarted = 0;
-	uint16_t sampSize;
 
 	LCD_Setup(); //initialize the LCD
 	LCD_Clear(BLACK);
+	Draw_Start_Screen();
 
 	init_buttons();
 
-
-	//Build Maze
-	Draw_Start_Screen();
-	//Build_Maze();
-	/*
-
-	*/
-
 	for(;;){
 		//DAC audio control
-		if(DMA1->ISR & DMA_ISR_TCIF3){
-			currArr = Update_Array(currArr, data, data2, &fp, &br, sampSize, fstart);
-		}
+
 
 		if(!(GPIOC->IDR & GPIO_IDR_4)){
 			//UP
@@ -121,11 +119,6 @@ int main() {
 				gameStarted = 1;
 				Build_Maze();
 				Draw_Timebar();
-				Init_Play_Devices(data);
-				sampSize = play("8bit.wav\0", header, data, data2, &fp, &br);
-				fstart = fp;
-			//Build_Maze();
-
 			} else {
 				//game running
 			}

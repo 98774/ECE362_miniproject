@@ -228,6 +228,9 @@ void Init_Play_Devices(uint8_t *data){
    TIM15->PSC = 0;
    TIM15->CR2 &= ~TIM_CR2_MMS;
    TIM15->CR2 |=  TIM_CR2_MMS_1; //enable update trigger on timer edge
+
+   //enable interrupt
+   NVIC_EnableIRQ(DMA1_Ch2_3_DMA2_Ch1_2_IRQn);
 }
 
 uint16_t play(char *fileName,  uint8_t *header, uint8_t *data, uint8_t *data2, FIL *fp, UINT *br){
