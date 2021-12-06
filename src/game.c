@@ -1,6 +1,12 @@
 #include "game.h"
 #include "STM32f0xx.h"
 
+int gameRunning = 0;
+
+void Move(int dir, int playerX, int playerY){
+	return;
+}
+
 void init_buttons(){
 
     // Turn on clock for the GPIO pins
@@ -52,7 +58,7 @@ void init_buttons(){
 
 
     //Unmask interrupt
-    NVIC->ISER[0] |= 1 << EXTI4_15_IRQn;
+    //NVIC->ISER[0] |= 1 << EXTI4_15_IRQn;
 }
 
 
@@ -64,7 +70,7 @@ void EXTI4_15_IRQHandler(void){
 
     }
 	if (~GPIOC->IDR & GPIO_IDR_5){
-		//Right Down
+
 
 	}
 	if (~GPIOC->IDR & GPIO_IDR_6){
@@ -76,16 +82,21 @@ void EXTI4_15_IRQHandler(void){
 
 	}
 	if (~GPIOC->IDR & GPIO_IDR_8){
-		//Left Up
+		//Pause/Start
+		if(!gameRunning){
+			gameRunning = 1;
+			//start game
+			Build_Maze();
+			Draw_Timebar();
+			init_TIM6();
+		} else{
+
+		}
 
 	}
 
-//    if ((GPIOC->IDR & GPIO_IDR_4) && (GPIOC->IDR & GPIO_IDR_5) &&
-//            (GPIOC->IDR & GPIO_IDR_6) && (GPIOC->IDR & GPIO_IDR_7) &&
-//            (GPIOC->IDR & GPIO_IDR_8)){
 
-        EXTI->PR |= (EXTI_PR_PR4 | EXTI_PR_PR5 | EXTI_PR_PR6 | EXTI_PR_PR7
-                | EXTI_PR_PR8);
+	EXTI->PR |= (EXTI_PR_PR4 | EXTI_PR_PR5 | EXTI_PR_PR6 | EXTI_PR_PR7
+			| EXTI_PR_PR8);
 
-//    }
 }

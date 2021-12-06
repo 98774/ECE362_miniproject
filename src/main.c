@@ -65,7 +65,10 @@ FIL fstart;
 
 //Constants for MAZE
 extern cell MAZE[XSIZE][YSIZE];
-
+int px = 0;
+int py = 0;
+extern int gameRunning;
+extern int gameOver;
 
 void DMA1_CH2_3_DMA2_CH1_2_IRQHandler(){
 	if(DMA1->ISR & DMA_ISR_TCIF3){
@@ -75,6 +78,7 @@ void DMA1_CH2_3_DMA2_CH1_2_IRQHandler(){
 
 //CONSTANTS FOR LCD
 int main() {
+	int firstStart = 1;
 	//Storage and initialization for OLED
 	FATFS *fs = &fs_storage;
 	f_mount(fs, "", 1);
@@ -82,7 +86,7 @@ int main() {
 	Init_Play_Devices(data);
 	sampSize = play("8bit.wav\0", header, data, data2, &fp, &br);
 	fstart = fp;
-	int gameStarted = 0;
+
 
 	LCD_Setup(); //initialize the LCD
 	LCD_Clear(BLACK);
@@ -114,15 +118,27 @@ int main() {
 		}
 
 		if(!(GPIOC->IDR & GPIO_IDR_8)){
-			if(!gameStarted){
+			if(firstStart){
+				srandom((unsigned int) TIM15->CNT); //seed random number generator with system time
+				firstStart = 0;
+			}
+			if(!gameRunning){
 				//start game
-				gameStarted = 1;
+				gameRunning = 1;
 				Build_Maze();
 				Draw_Timebar();
 				init_TIM6();
 			} else {
 				//game running
+
 			}
+		}
+
+		if(gameOver){
+			gameOver = 0;
+			gameRunning = 0;
+	    	LCD_Clear(BLACK);
+			Draw_Game_Over();
 		}
     }
 }

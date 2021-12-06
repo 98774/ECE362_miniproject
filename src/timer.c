@@ -5,6 +5,9 @@
 
 #define TIME 60
 int rows = 0;
+int gameRunning;
+int gameOver;
+
 /*******************************************************************************
 Author: Bryce Sasser
 Date: 11/11/2021
@@ -41,8 +44,7 @@ void TIM6_DAC_IRQHandler(void){
 
     if(rows == 320){
     	TIM6->CR1 &= ~TIM_CR1_CEN;
-    	LCD_Clear(BLACK);
-		//Game_Over();
+		gameOver = 1;
     } else {
     	rows++;
     }

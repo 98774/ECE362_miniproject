@@ -22,7 +22,7 @@ long numin=1;     //Number of cells in the maze.
 
 int Build_Maze()
 {
-	srandom((unsigned int) TIM15->CNT); //seed random number generator with system time
+
 	initialize(MAZE);      //initialize the maze
 	generate(MAZE);        //generate the maze
 	savebmp(1,1);

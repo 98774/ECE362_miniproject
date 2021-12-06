@@ -31,6 +31,17 @@ void Draw_Start_Screen()
 	LCD_DrawString(50, 56, BLACK, RED, info2, LARGE, 0);
 }
 
+void Draw_Game_Over()
+{
+    char *title = "GAME OVER!\0";
+    char *info = "Press RESET to";
+    char *info2 = "start over!";
+    LCD_Clear(MAGENTA);
+    LCD_DrawString(75, 20, BLACK, WHITE, title, LARGE, 0);
+    LCD_DrawString(10, 40, BLACK, RED, info, LARGE, 0);
+    LCD_DrawString(50, 56, BLACK, RED, info2, LARGE, 0);
+}
+
 void Draw_Timebar(){
 	LCD_DrawFillRectangle((OFFSETX + SIZE * (XSIZE - 2) * 2),
 	        0,
