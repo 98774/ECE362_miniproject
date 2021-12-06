@@ -1,5 +1,6 @@
 #include "game.h"
 #include "STM32f0xx.h"
+#include "draw.h"
 
 int gameRunning = 0;
 
@@ -62,41 +63,101 @@ void init_buttons(){
 }
 
 
-void EXTI4_15_IRQHandler(void){
+//void EXTI4_15_IRQHandler(void){
+//
+//
+//    if (~GPIOC->IDR & GPIO_IDR_4){
+//        //Pause
+//
+//    }
+//	if (~GPIOC->IDR & GPIO_IDR_5){
+//
+//
+//	}
+//	if (~GPIOC->IDR & GPIO_IDR_6){
+//		//Right Up
+//
+//	}
+//	if (~GPIOC->IDR & GPIO_IDR_7){
+//		//Left Down
+//
+//	}
+//	if (~GPIOC->IDR & GPIO_IDR_8){
+//		//Pause/Start
+//		if(!gameRunning){
+//			gameRunning = 1;
+//			//start game
+//			Build_Maze();
+//			Draw_Timebar();
+//			init_TIM6();
+//		} else{
+//
+//		}
+//
+//	}
+//
+//
+//	EXTI->PR |= (EXTI_PR_PR4 | EXTI_PR_PR5 | EXTI_PR_PR6 | EXTI_PR_PR7
+//			| EXTI_PR_PR8);
+//
+//}
 
-
-    if (~GPIOC->IDR & GPIO_IDR_4){
-        //Pause
-
-    }
-	if (~GPIOC->IDR & GPIO_IDR_5){
-
+int move_down(int xCurr, int yCurr)
+{
+//	if(!(MAZE[xCurr][yCurr - 1].isWall))
+	if( (yCurr +1)  >=0  && (yCurr + 1) < YSIZE)
+	{
+		Draw_Cell(xCurr,yCurr,0xffff);
+		nano_wait(10000);
+		yCurr += 1;
+		Draw_Cell(xCurr,yCurr,0xf800);
 
 	}
-	if (~GPIOC->IDR & GPIO_IDR_6){
-		//Right Up
 
-	}
-	if (~GPIOC->IDR & GPIO_IDR_7){
-		//Left Down
-
-	}
-	if (~GPIOC->IDR & GPIO_IDR_8){
-		//Pause/Start
-		if(!gameRunning){
-			gameRunning = 1;
-			//start game
-			Build_Maze();
-			Draw_Timebar();
-			init_TIM6();
-		} else{
-
-		}
-
-	}
-
-
-	EXTI->PR |= (EXTI_PR_PR4 | EXTI_PR_PR5 | EXTI_PR_PR6 | EXTI_PR_PR7
-			| EXTI_PR_PR8);
-
+	return yCurr;
 }
+int move_up(int xCurr, int yCurr)
+{
+//	if(!(MAZE[xCurr][yCurr + 1].isWall))
+	if( (yCurr - 1) >=0  && (yCurr - 1) < YSIZE)
+
+	{
+		Draw_Cell(xCurr,yCurr,0xffff);
+		nano_wait(10000);
+		yCurr -= 1;
+		Draw_Cell(xCurr,yCurr,0xf800);
+
+	}
+
+	return yCurr;
+}
+
+int move_right(int xCurr, int yCurr)
+{
+//	if(!(MAZE[xCurr+1][yCurr].isWall))
+	if( (xCurr + 1) >= 0  && xCurr + 1 < XSIZE)
+	{
+		Draw_Cell(xCurr,yCurr,0xffff);
+		nano_wait(10000);
+		xCurr += 1;
+		Draw_Cell(xCurr,yCurr,0xf800);
+	}
+
+	return xCurr;
+}
+
+int move_left(int xCurr, int yCurr)
+{
+//	if(!(MAZE[xCurr - 1][yCurr].isWall))
+	if( (xCurr - 1) >=0  && (xCurr - 1) < XSIZE)
+	{
+		Draw_Cell(xCurr,yCurr,0xffff);
+		nano_wait(10000);
+		xCurr -= 1;
+		Draw_Cell(xCurr,yCurr,0xf800);
+
+	}
+
+	return xCurr;
+}
+

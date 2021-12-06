@@ -174,7 +174,7 @@ void savebmp(int xspecial, int yspecial){
 	//Actual writing of data begins here:
 	for(y = 0; y <= height - 1; y++){
 		for(x = 0; x <= width - 1; x++){
-			nano_wait(1000000);
+			nano_wait(1000000); //generates maze slowly for effect
 			if(x%2 == 1 && y%2 == 1){
 				if(x/2+1 == xspecial && y/2+1 == yspecial) RED;
 				else{

@@ -67,6 +67,8 @@ FIL fstart;
 extern cell MAZE[XSIZE][YSIZE];
 int px = 0;
 int py = 0;
+int xCurr;
+int yCurr;
 extern int gameRunning;
 extern int gameOver;
 
@@ -97,23 +99,29 @@ int main() {
 	for(;;){
 		//DAC audio control
 
-
-		if(!(GPIOC->IDR & GPIO_IDR_4)){
+		nano_wait(100000000);
+		if(!(GPIOC->IDR & GPIO_IDR_4) && gameRunning == 1){
 			//UP
+
+			yCurr = move_up(xCurr, yCurr);
+
 		}
 
 
-		if(!(GPIOC->IDR & GPIO_IDR_5)){
+		if(!(GPIOC->IDR & GPIO_IDR_5) && gameRunning == 1){
+			yCurr = move_down(xCurr, yCurr);
 			//DOWN
 		}
 
 
-		if(!(GPIOC->IDR & GPIO_IDR_6)){
+		if(!(GPIOC->IDR & GPIO_IDR_6) && gameRunning == 1){
+			xCurr = move_left(xCurr,yCurr);
 			//LEFT
 		}
 
 
-		if(!(GPIOC->IDR & GPIO_IDR_7)){
+		if(!(GPIOC->IDR & GPIO_IDR_7) && gameRunning == 1){
+			xCurr = move_right(xCurr, yCurr);
 			//RIGHT
 		}
 
@@ -125,6 +133,8 @@ int main() {
 			if(!gameRunning){
 				//start game
 				gameRunning = 1;
+				xCurr = 0;
+				yCurr = 0;
 				Build_Maze();
 				Draw_Timebar();
 				init_TIM6();
