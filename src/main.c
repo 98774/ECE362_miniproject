@@ -65,6 +65,7 @@ FIL fstart;
 
 //Constants for MAZE
 extern cell MAZE[XSIZE][YSIZE];
+extern cell WALLS[WALLXSIZE][WALLYSIZE];
 int px = 0;
 int py = 0;
 int xCurr;
@@ -99,36 +100,46 @@ int main() {
 
 	for(;;){
 		//Update timer
-
 		LCD_DrawLine((OFFSETX + SIZE * (XSIZE - 2) * 2),
 		    	        rows,
 		    	        (OFFSETX + SIZE * (XSIZE - 2) * 2) + XSIZE,
 		    	        rows, GREEN);
-		nano_wait(100000000); //get inputs at a reasonable speed
-		if(!(GPIOC->IDR & GPIO_IDR_4) && gameRunning == 1){
-			//UP
-			yCurr = move_up(xCurr, yCurr);
 
+		nano_wait(100000000); //get inputs at a reasonable speed
+
+		//UP
+		if(!(GPIOC->IDR & GPIO_IDR_4) && gameRunning == 1){
+			yCurr = move_up(xCurr, yCurr);
+			//char title [1];
+			//title[0] = WALLS[xCurr][yCurr].isWall;
+			//LCD_DrawString(75, 20, BLACK, BLUE, title, 16, 0);
 		}
 
-
+		//Down
 		if(!(GPIOC->IDR & GPIO_IDR_5) && gameRunning == 1){
 			yCurr = move_down(xCurr, yCurr);
-			//DOWN
+			//char *title = "THIS IS TEXT";
+			//title[0] = (char) WALLS[xCurr][yCurr].isWall;
+			//LCD_DrawString(75, 20, BLACK, BLUE, title, 16, 0);
 		}
 
-
+		//LEFT
 		if(!(GPIOC->IDR & GPIO_IDR_6) && gameRunning == 1){
 			xCurr = move_left(xCurr,yCurr);
-			//LEFT
+			//char title [1];
+			//title[0] = WALLS[xCurr][yCurr].isWall;
+			//LCD_DrawString(75, 20, BLACK, BLUE, title, 16, 0);
 		}
 
-
+		//Right
 		if(!(GPIOC->IDR & GPIO_IDR_7) && gameRunning == 1){
 			xCurr = move_right(xCurr, yCurr);
-			//RIGHT
+			//char title [1];
+			//title[0] = WALLS[xCurr][yCurr].isWall;
+			//LCD_DrawString(75, 20, BLACK, BLUE, title, 16, 0);
 		}
 
+		//Start
 		if(!(GPIOC->IDR & GPIO_IDR_8)){
 			if(firstStart){
 				srandom((unsigned int) TIM15->CNT); //seed random number generator with system time

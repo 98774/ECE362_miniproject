@@ -15,8 +15,9 @@ Modified by Jonathon Snyder
 #include <stdbool.h>
 #include "mazegen.h"
 
-cell MAZE[XSIZE][YSIZE];
 
+cell MAZE[XSIZE][YSIZE];
+cell WALLS[WALLXSIZE][WALLYSIZE];
 long numin=1;     //Number of cells in the maze.
 
 
@@ -176,16 +177,38 @@ void savebmp(int xspecial, int yspecial){
 		for(x = 0; x <= width - 1; x++){
 			nano_wait(1000000);
 			if(x%2 == 1 && y%2 == 1){
-				if(x/2+1 == xspecial && y/2+1 == yspecial) RED;
-				else{
-					if(MAZE[x/2+1][y/2+1].in) WHITE; else BLACK;
+				if(x/2+1 == xspecial && y/2+1 == yspecial) {
+					RED;
+					WALLS[x][y].isWall = 0;
+
+				} else {
+					if(MAZE[x/2+1][y/2+1].in){
+						WHITE;
+						WALLS[x][y].isWall = 0;
+					} else {
+						BLACK;
+						WALLS[x][y].isWall = 1;
+					}
 				}
 			}else if(x%2 == 0 && y%2 == 0){
 				BLACK;
+				WALLS[x][y].isWall = 1;
 			}else if(x%2 == 0 && y%2 == 1){
-				if(MAZE[x/2+1][y/2+1].left) BLACK; else WHITE;
+				if(MAZE[x/2+1][y/2+1].left){
+					BLACK;
+					WALLS[x][y].isWall = 1;
+				}
+				else {
+					WHITE;
+					WALLS[x][y].isWall = 0;
+				}
 			}else if(x%2 == 1 && y%2 == 0){
-				if(MAZE[x/2+1][y/2+1].up) BLACK; else WHITE;
+				if(MAZE[x/2+1][y/2+1].up){
+					BLACK;
+					WALLS[x][y].isWall = 1;
+				} else
+					WHITE;
+					WALLS[x][y].isWall = 0;
 			}
 		}
 	}

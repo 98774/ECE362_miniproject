@@ -20,6 +20,8 @@
 
 #define XSIZE 14
 #define YSIZE 19
+#define WALLXSIZE 24
+#define WALLYSIZE 34
 
 typedef struct cell{
 	bool in;  //Is this cell in the maze?
