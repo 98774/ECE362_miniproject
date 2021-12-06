@@ -37,10 +37,7 @@ void init_TIM6(){
 
 void TIM6_DAC_IRQHandler(void){
     TIM6->SR &= ~TIM_SR_UIF;
-    LCD_DrawLine((OFFSETX + SIZE * (XSIZE - 2) * 2),
-    	        rows,
-    	        (OFFSETX + SIZE * (XSIZE - 2) * 2) + XSIZE,
-    	        rows, GREEN);
+
 
     if(rows == 320){
     	TIM6->CR1 &= ~TIM_CR1_CEN;

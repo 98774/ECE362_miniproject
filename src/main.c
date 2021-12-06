@@ -71,6 +71,7 @@ int xCurr;
 int yCurr;
 extern int gameRunning;
 extern int gameOver;
+extern int rows;
 
 void DMA1_CH2_3_DMA2_CH1_2_IRQHandler(){
 	if(DMA1->ISR & DMA_ISR_TCIF3){
@@ -97,12 +98,15 @@ int main() {
 	init_buttons();
 
 	for(;;){
-		//DAC audio control
+		//Update timer
 
-		nano_wait(100000000);
+		LCD_DrawLine((OFFSETX + SIZE * (XSIZE - 2) * 2),
+		    	        rows,
+		    	        (OFFSETX + SIZE * (XSIZE - 2) * 2) + XSIZE,
+		    	        rows, GREEN);
+		nano_wait(100000000); //get inputs at a reasonable speed
 		if(!(GPIOC->IDR & GPIO_IDR_4) && gameRunning == 1){
 			//UP
-
 			yCurr = move_up(xCurr, yCurr);
 
 		}

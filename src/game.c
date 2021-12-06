@@ -108,7 +108,6 @@ int move_down(int xCurr, int yCurr)
 	if( (yCurr +1)  >=0  && (yCurr + 1) < YSIZE)
 	{
 		Draw_Cell(xCurr,yCurr,0xffff);
-		nano_wait(10000);
 		yCurr += 1;
 		Draw_Cell(xCurr,yCurr,0xf800);
 
@@ -123,7 +122,6 @@ int move_up(int xCurr, int yCurr)
 
 	{
 		Draw_Cell(xCurr,yCurr,0xffff);
-		nano_wait(10000);
 		yCurr -= 1;
 		Draw_Cell(xCurr,yCurr,0xf800);
 
@@ -138,7 +136,6 @@ int move_right(int xCurr, int yCurr)
 	if( (xCurr + 1) >= 0  && xCurr + 1 < XSIZE)
 	{
 		Draw_Cell(xCurr,yCurr,0xffff);
-		nano_wait(10000);
 		xCurr += 1;
 		Draw_Cell(xCurr,yCurr,0xf800);
 	}
@@ -152,7 +149,6 @@ int move_left(int xCurr, int yCurr)
 	if( (xCurr - 1) >=0  && (xCurr - 1) < XSIZE)
 	{
 		Draw_Cell(xCurr,yCurr,0xffff);
-		nano_wait(10000);
 		xCurr -= 1;
 		Draw_Cell(xCurr,yCurr,0xf800);
 

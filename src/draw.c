@@ -46,5 +46,5 @@ void Draw_Timebar(){
 	LCD_DrawFillRectangle((OFFSETX + SIZE * (XSIZE - 2) * 2),
 	        0,
 	        (OFFSETX + SIZE * (XSIZE - 2) * 2) + XSIZE,
-	        (OFFSETY + SIZE * (YSIZE - 2) * 2) + YSIZE, LIGHTGREEN);
+	        (OFFSETY + SIZE * (YSIZE - 2) * 2) + YSIZE, MAGENTA);
 }

@@ -22,7 +22,7 @@ long numin=1;     //Number of cells in the maze.
 
 int Build_Maze()
 {
-
+	srandom((unsigned int) TIM15->CNT); //seed random number generator with system time
 	initialize(MAZE);      //initialize the maze
 	generate(MAZE);        //generate the maze
 	savebmp(1,1);
@@ -174,7 +174,7 @@ void savebmp(int xspecial, int yspecial){
 	//Actual writing of data begins here:
 	for(y = 0; y <= height - 1; y++){
 		for(x = 0; x <= width - 1; x++){
-			nano_wait(1000000); //generates maze slowly for effect
+			nano_wait(1000000);
 			if(x%2 == 1 && y%2 == 1){
 				if(x/2+1 == xspecial && y/2+1 == yspecial) RED;
 				else{
