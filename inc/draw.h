@@ -7,6 +7,7 @@
 #define SIZE 9
 
 
+void Draw_Cell(int x, int y, int color);
 void Draw_Game_Over();
 void Draw_Grid(cell *MAZE[]);
 void Draw_Start_Screen();
