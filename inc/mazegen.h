@@ -2,7 +2,7 @@
 #define __MAZEGEN_H__
 
 #include <stdbool.h>
-
+#include "lcd.h"
 
 #define UP 0     //-y
 #define DOWN 1   //+y
@@ -19,6 +19,8 @@
 #define YSIZE 19
 #define WALLXSIZE 24
 #define WALLYSIZE 34
+#define WALLCOLOR BLACK
+#define BACKCOLOR WHITE
 
 typedef struct cell{
 	bool in;  //Is this cell in the maze?

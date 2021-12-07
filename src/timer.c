@@ -19,6 +19,7 @@ void init_TIM6(){
     //Turn on clock for TIM6
     RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
 
+    TIM6->CR1 &= ~TIM_CR1_CEN;
     //Turn on the interrupt trigger for timer
     TIM6->DIER |= TIM_DIER_UIE;
 

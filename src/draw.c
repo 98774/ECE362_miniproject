@@ -1,7 +1,7 @@
 #include "mazegen.h"
 #include "draw.h"
 #include "lcd.h"
-
+#include <stdio.h>
 #define SMALL 12
 #define LARGE 16
 
@@ -36,15 +36,25 @@ void Draw_Start_Screen()
 	LCD_DrawString(50, 56, BLACK, RED, info2, LARGE, 0);
 }
 
-void Draw_Game_Over()
+void Draw_Game_Over(int totalMazes)
 {
+	char numMazes[5];
+	sprintf(numMazes,"%d", totalMazes);
     char *title = "GAME OVER!\0";
+    char *mazesNot1 = "You completed    mazes!";
+    char *mazes1 = "You completed 1 maze!";
     char *info = "Press RESET to";
     char *info2 = "start over!";
+
     LCD_Clear(MAGENTA);
     LCD_DrawString(75, 20, BLACK, WHITE, title, LARGE, 0);
-    LCD_DrawString(10, 40, BLACK, RED, info, LARGE, 0);
-    LCD_DrawString(50, 56, BLACK, RED, info2, LARGE, 0);
+    if(totalMazes == 1)
+    	LCD_DrawString(25, 40, BLACK, WHITE, mazes1, LARGE, 0);
+    else
+    	LCD_DrawString(25, 40, BLACK, WHITE, mazesNot1, LARGE, 0);
+    LCD_DrawString(140, 40, RED, WHITE, numMazes, LARGE, 0);
+    LCD_DrawString(50, 60, BLACK, RED, info, LARGE, 0);
+    LCD_DrawString(75, 76, BLACK, RED, info2, LARGE, 0);
 }
 
 void Draw_Timebar(){

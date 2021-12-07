@@ -25,9 +25,9 @@ long numin=1;     //Number of cells in the maze.
 
 int Build_Maze()
 {
-	srandom((unsigned int) TIM15->CNT); //seed random number generator with system time
-	initialize(MAZE);      //initialize the maze
-	generate(MAZE);        //generate the maze
+	numin = 1;
+	initialize();      //initialize the maze
+	generate();        //generate the maze
 	savebmp(1,1);
 	return 0;
 }
@@ -41,13 +41,15 @@ void initialize(){
 			//All maze cells have all walls existing by default, except the perimeter cells.
 			MAZE[x][y].up   = (x==0||x==XSIZE-1||y==0)?0:1;
 			MAZE[x][y].left = (x==0||y==0||y==YSIZE-1)?0:1;
+			MAZE[x][y].prevx = 0;
+			MAZE[x][y].prevy = 0;
 		}
 	}
 	return;
 }
 
 void generate(){
-	int xcur=1, ycur=1;//start growing from the corner. It could theoretically start growing from anywhere, doesn't matter.
+	int xcur=10, ycur=10;//start growing from the corner. It could theoretically start growing from anywhere, doesn't matter.
 	MAZE[xcur][ycur].in = 1;
 	int whichway;
 	bool success;
@@ -117,9 +119,7 @@ void generate(){
 		MAZE[xcur][ycur].in=1;
 		numin++; //Every iteration of this loop, one maze cell is added to the maze.
 	}while(numin<(XSIZE-2)*(YSIZE-2));
-#ifdef movie
-	savebmp(xcur,ycur);
-#endif
+
 	return;
 }
 
@@ -128,10 +128,6 @@ void savebmp(int xspecial, int yspecial){
 	int x, y, n;
 	int width=(XSIZE-1)*2-1;
 	int height=(YSIZE-1)*2-1;
-	//int goalX;
-	//int goalY;
-
-	//Set_Goal(&goalX, &goalY);
 
 	//Actual writing of data begins here:
 	for(y = 0; y <= height - 1; y++){
@@ -146,7 +142,7 @@ void savebmp(int xspecial, int yspecial){
 
 				} else {
 					//if(MAZE[x/2+1][y/2+1].in){
-					Draw_Cell(x-1, y-1, WHITE);
+					Draw_Cell(x-1, y-1, BACKCOLOR);
 
 //					} else {
 //						Draw_Cell(x-1, y-1, WHITE); //black
@@ -155,19 +151,20 @@ void savebmp(int xspecial, int yspecial){
 				}
 			}else if(x%2 == 0 && y%2 == 0){
 				//All walls
-				Draw_Cell(x-1, y-1, BLUE); //Black
+				Draw_Cell(x-1, y-1, WALLCOLOR); //Black
+
 				if(x > 0 && y > 0)
 					WALLS[x-1][y-1].isWall = 1;
 
 			}else if(x%2 == 0 && y%2 == 1){
 				//might be wall
 				if(MAZE[x/2+1][y/2+1].left){
-					Draw_Cell(x-1, y-1, BLUE); //black
+					Draw_Cell(x-1, y-1, WALLCOLOR); //black
 					if(x > 0 && y > 0)
 						WALLS[x-1][y-1].isWall = 1;
 				}
 				else {
-					Draw_Cell(x-1, y-1, WHITE);
+					Draw_Cell(x-1, y-1, BACKCOLOR);
 					if(x > 0 && y > 0)
 						WALLS[x-1][y-1].isWall = 0;
 				}
@@ -175,11 +172,11 @@ void savebmp(int xspecial, int yspecial){
 			}else if(x%2 == 1 && y%2 == 0){
 				//might be wall
 				if(MAZE[x/2+1][y/2+1].up){
-					Draw_Cell(x-1, y-1, BLUE); //black
+					Draw_Cell(x-1, y-1, WALLCOLOR); //black
 					if(x > 0 && y > 0)
 						WALLS[x-1][y-1].isWall = 1;
 				} else{
-					Draw_Cell(x-1, y-1, WHITE);
+					Draw_Cell(x-1, y-1, BACKCOLOR);
 					if(x > 0 && y > 0)
 						WALLS[x-1][y-1].isWall = 0;
 				}
