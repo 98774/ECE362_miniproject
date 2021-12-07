@@ -20,6 +20,11 @@ void Draw_Cell(int x, int y, int color){
 	LCD_DrawFillRectangle(SIZE*x+OFFSETX, SIZE*y+OFFSETY, SIZE*(x+1)+OFFSETX - 1, SIZE*(y+1)+OFFSETY - 1, color);
 }
 
+void Draw_Goal(int x, int y, int color){
+	LCD_DrawFillRectangle(SIZE*x+OFFSETX , SIZE*y+OFFSETY, SIZE*(x+1)+OFFSETX - 1, SIZE*(y+1)+OFFSETY - 1, color);
+}
+
+
 void Draw_Start_Screen()
 {
 	char *title = "MAZE RUNNER\0";

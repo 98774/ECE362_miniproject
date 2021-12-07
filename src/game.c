@@ -2,6 +2,7 @@
 #include "STM32f0xx.h"
 #include "draw.h"
 #include "mazegen.h"
+#include "lcd.h"
 
 int gameRunning = 0;
 extern cell WALLS[WALLXSIZE][WALLYSIZE];
@@ -66,47 +67,10 @@ void init_buttons(){
 
 
 //void EXTI4_15_IRQHandler(void){
-//
-//
-//    if (~GPIOC->IDR & GPIO_IDR_4){
-//        //Pause
-//
-//    }
-//	if (~GPIOC->IDR & GPIO_IDR_5){
-//
-//
-//	}
-//	if (~GPIOC->IDR & GPIO_IDR_6){
-//		//Right Up
-//
-//	}
-//	if (~GPIOC->IDR & GPIO_IDR_7){
-//		//Left Down
-//
-//	}
-//	if (~GPIOC->IDR & GPIO_IDR_8){
-//		//Pause/Start
-//		if(!gameRunning){
-//			gameRunning = 1;
-//			//start game
-//			Build_Maze();
-//			Draw_Timebar();
-//			init_TIM6();
-//		} else{
-//
-//		}
-//
-//	}
-//
-//
-//	EXTI->PR |= (EXTI_PR_PR4 | EXTI_PR_PR5 | EXTI_PR_PR6 | EXTI_PR_PR7
-//			| EXTI_PR_PR8);
-//
 //}
 
 int move_down(int xCurr, int yCurr)
 {
-//	if(!(MAZE[xCurr][yCurr - 1].isWall))
 	if((yCurr + 1) < WALLYSIZE && !WALLS[xCurr][yCurr + 1].isWall)
 	{
 		Draw_Cell(xCurr,yCurr,0xffff);
@@ -119,7 +83,6 @@ int move_down(int xCurr, int yCurr)
 }
 int move_up(int xCurr, int yCurr)
 {
-//	if(!(MAZE[xCurr][yCurr + 1].isWall))
 	if( (yCurr) > 0 && !WALLS[xCurr][yCurr - 1].isWall)
 
 	{
@@ -134,7 +97,6 @@ int move_up(int xCurr, int yCurr)
 
 int move_right(int xCurr, int yCurr)
 {
-//	if(!(MAZE[xCurr+1][yCurr].isWall))
 	if(xCurr + 1 < WALLXSIZE && !WALLS[xCurr + 1][yCurr].isWall)
 	{
 		Draw_Cell(xCurr,yCurr,0xffff);
@@ -147,7 +109,6 @@ int move_right(int xCurr, int yCurr)
 
 int move_left(int xCurr, int yCurr)
 {
-//	if(!(MAZE[xCurr - 1][yCurr].isWall))
 	if( (xCurr) > 0 && !WALLS[xCurr - 1][yCurr].isWall)
 	{
 		Draw_Cell(xCurr,yCurr,0xffff);
@@ -159,3 +120,16 @@ int move_left(int xCurr, int yCurr)
 	return xCurr;
 }
 
+//sets goalX and goalY to the coords of the goal and draws a goal there
+void Set_Goal(int *goalX, int *goalY){
+	*goalX = (rand() % (XSIZE - 1)) * 2 - 2;
+	if(*goalX < 1)
+		*goalX += 2;
+
+	*goalY = (rand() % (YSIZE - 1)) * 2 - 2;
+	if(*goalY < 1)
+		*goalY += 2;
+
+
+	Draw_Goal(*goalX, *goalY, GREEN);
+}

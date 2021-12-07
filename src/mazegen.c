@@ -128,6 +128,10 @@ void savebmp(int xspecial, int yspecial){
 	int x, y, n;
 	int width=(XSIZE-1)*2-1;
 	int height=(YSIZE-1)*2-1;
+	//int goalX;
+	//int goalY;
+
+	//Set_Goal(&goalX, &goalY);
 
 	//Actual writing of data begins here:
 	for(y = 0; y <= height - 1; y++){

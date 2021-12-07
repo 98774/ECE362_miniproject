@@ -83,6 +83,8 @@ int main() {
 	int firstStart = 1;
 	int xCurr = 1;
 	int yCurr = 1;
+	int goalX = 0;
+	int goalY = 0;
 
 	//Storage and initialization for OLED
 	FATFS *fs = &fs_storage;
@@ -153,6 +155,7 @@ int main() {
 				yCurr = 0;
 				Build_Maze();
 				Draw_Timebar();
+				Set_Goal(&goalX, &goalY);
 				init_TIM6();
 			} else {
 				//game running
@@ -166,6 +169,9 @@ int main() {
 	    	LCD_Clear(BLACK);
 			Draw_Game_Over();
 		}
+
+		if(xCurr == goalX && yCurr == goalY)
+			LCD_Clear(BLACK);
     }
 }
 #endif
