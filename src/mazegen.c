@@ -14,6 +14,8 @@ Modified by Jonathon Snyder
 #include <time.h>
 #include <stdbool.h>
 #include "mazegen.h"
+#include "lcd.h"
+#include "draw.h"
 
 
 cell MAZE[XSIZE][YSIZE];
@@ -50,45 +52,7 @@ void generate(){
 	int whichway;
 	bool success;
 	do{
-#ifdef movie
-		savebmp(xcur,ycur);
-#endif
-#ifdef nodeadend
-		if( MAZE[xcur][ycur-1].in&&MAZE[xcur][ycur+1].in&&
-			   MAZE[xcur-1][ycur].in&&MAZE[xcur+1][ycur].in ){
-				   //If at a dead end, randomly destroy a wall to make it not a dead end!
-			do{
-				success=0;
-				whichway=rand()%4;
-				switch(whichway){
-				case UP:
-					if(MAZE[xcur][ycur].up&&ycur!=1){
-						success=1;
-						MAZE[xcur][ycur].up=0;
-					}
-					break;
-				case DOWN:
-					if(MAZE[xcur][ycur+1].up&&ycur!=YSIZE-2){
-						success=1;
-						MAZE[xcur][ycur+1].up=0;
-					}
-					break;
-				case LEFT:
-					if(MAZE[xcur][ycur].left&&xcur!=1){
-						success=1;
-						MAZE[xcur][ycur].left=0;
-					}
-					break;
-				case RIGHT:
-					if(MAZE[xcur+1][ycur].left&&xcur!=XSIZE-2){
-						success=1;
-						MAZE[xcur+1][ycur].left=0;
-					}
-					break;
-				}
-			}while(!success);
-		}
-#endif
+
 #ifdef backtrack
 		while( MAZE[xcur][ycur-1].in&&MAZE[xcur][ycur+1].in&&
 			   MAZE[xcur-1][ycur].in&&MAZE[xcur+1][ycur].in ){
@@ -161,54 +125,60 @@ void generate(){
 
 void savebmp(int xspecial, int yspecial){
 
-	int extrabytes, paddedsize;
 	int x, y, n;
 	int width=(XSIZE-1)*2-1;
 	int height=(YSIZE-1)*2-1;
 
-	extrabytes = (4 - ((width * 3) % 4))%4;
-
-	//paddedsize = ((width * 3) + extrabytes) * height;
-
-//	unsigned int headers[13] = {paddedsize + 54, 0, 54, 40, width, height, 0, 0, paddedsize, 0, 0, 0, 0};
-
 	//Actual writing of data begins here:
 	for(y = 0; y <= height - 1; y++){
 		for(x = 0; x <= width - 1; x++){
-			nano_wait(1000000);
+			nano_wait(500000);
 			if(x%2 == 1 && y%2 == 1){
+				if(x > 0 && y > 0)
+					WALLS[x - 1][y - 1].isWall = 0; //all cells on even (odd, odd) = not wall
 				if(x/2+1 == xspecial && y/2+1 == yspecial) {
-					RED;
-					WALLS[x][y].isWall = 0;
+					Draw_Cell(x-1, y-1, RED);
+					//WALLS[x][y].isWall = 0;
 
 				} else {
-					if(MAZE[x/2+1][y/2+1].in){
-						WHITE;
-						WALLS[x][y].isWall = 0;
-					} else {
-						BLACK;
-						WALLS[x][y].isWall = 1;
-					}
+					//if(MAZE[x/2+1][y/2+1].in){
+					Draw_Cell(x-1, y-1, WHITE);
+
+//					} else {
+//						Draw_Cell(x-1, y-1, WHITE); //black
+//						WALLS[x][y].isWall = 0;
+//					}
 				}
 			}else if(x%2 == 0 && y%2 == 0){
-				BLACK;
-				WALLS[x][y].isWall = 1;
+				//All walls
+				Draw_Cell(x-1, y-1, BLUE); //Black
+				if(x > 0 && y > 0)
+					WALLS[x-1][y-1].isWall = 1;
+
 			}else if(x%2 == 0 && y%2 == 1){
+				//might be wall
 				if(MAZE[x/2+1][y/2+1].left){
-					BLACK;
-					WALLS[x][y].isWall = 1;
+					Draw_Cell(x-1, y-1, BLUE); //black
+					if(x > 0 && y > 0)
+						WALLS[x-1][y-1].isWall = 1;
 				}
 				else {
-					WHITE;
-					WALLS[x][y].isWall = 0;
+					Draw_Cell(x-1, y-1, WHITE);
+					if(x > 0 && y > 0)
+						WALLS[x-1][y-1].isWall = 0;
 				}
+
 			}else if(x%2 == 1 && y%2 == 0){
+				//might be wall
 				if(MAZE[x/2+1][y/2+1].up){
-					BLACK;
-					WALLS[x][y].isWall = 1;
-				} else
-					WHITE;
-					WALLS[x][y].isWall = 0;
+					Draw_Cell(x-1, y-1, BLUE); //black
+					if(x > 0 && y > 0)
+						WALLS[x-1][y-1].isWall = 1;
+				} else{
+					Draw_Cell(x-1, y-1, WHITE);
+					if(x > 0 && y > 0)
+						WALLS[x-1][y-1].isWall = 0;
+				}
 			}
 		}
 	}

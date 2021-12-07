@@ -107,7 +107,7 @@ void init_buttons(){
 int move_down(int xCurr, int yCurr)
 {
 //	if(!(MAZE[xCurr][yCurr - 1].isWall))
-	if((yCurr + 2) < WALLYSIZE) // && !WALLS[xCurr][yCurr + 1].isWall)
+	if((yCurr + 1) < WALLYSIZE && !WALLS[xCurr][yCurr + 1].isWall)
 	{
 		Draw_Cell(xCurr,yCurr,0xffff);
 		yCurr += 1;
@@ -120,7 +120,7 @@ int move_down(int xCurr, int yCurr)
 int move_up(int xCurr, int yCurr)
 {
 //	if(!(MAZE[xCurr][yCurr + 1].isWall))
-	if( (yCurr) > 0) // && !WALLS[xCurr][yCurr - 1].isWall)
+	if( (yCurr) > 0 && !WALLS[xCurr][yCurr - 1].isWall)
 
 	{
 		Draw_Cell(xCurr,yCurr,0xffff);
@@ -135,7 +135,7 @@ int move_up(int xCurr, int yCurr)
 int move_right(int xCurr, int yCurr)
 {
 //	if(!(MAZE[xCurr+1][yCurr].isWall))
-	if(xCurr + 2 < WALLXSIZE) //&& !WALLS[xCurr + 1][yCurr].isWall)
+	if(xCurr + 1 < WALLXSIZE && !WALLS[xCurr + 1][yCurr].isWall)
 	{
 		Draw_Cell(xCurr,yCurr,0xffff);
 		xCurr += 1;
@@ -148,7 +148,7 @@ int move_right(int xCurr, int yCurr)
 int move_left(int xCurr, int yCurr)
 {
 //	if(!(MAZE[xCurr - 1][yCurr].isWall))
-	if( (xCurr) > 0) //&& !WALLS[xCurr - 1][yCurr].isWall)
+	if( (xCurr) > 0 && !WALLS[xCurr - 1][yCurr].isWall)
 	{
 		Draw_Cell(xCurr,yCurr,0xffff);
 		xCurr -= 1;

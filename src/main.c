@@ -68,8 +68,6 @@ extern cell MAZE[XSIZE][YSIZE];
 extern cell WALLS[WALLXSIZE][WALLYSIZE];
 int px = 0;
 int py = 0;
-int xCurr;
-int yCurr;
 extern int gameRunning;
 extern int gameOver;
 extern int rows;
@@ -83,6 +81,9 @@ void DMA1_CH2_3_DMA2_CH1_2_IRQHandler(){
 //CONSTANTS FOR LCD
 int main() {
 	int firstStart = 1;
+	int xCurr = 1;
+	int yCurr = 1;
+
 	//Storage and initialization for OLED
 	FATFS *fs = &fs_storage;
 	f_mount(fs, "", 1);
