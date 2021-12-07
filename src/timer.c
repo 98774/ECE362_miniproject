@@ -7,6 +7,7 @@
 int rows = 0;
 int gameRunning;
 int gameOver;
+int timSpeed = 500;
 
 /*******************************************************************************
 Author: Bryce Sasser
@@ -24,7 +25,7 @@ void init_TIM6(){
     TIM6->DIER |= TIM_DIER_UIE;
 
     //Set prescaler and auto-reload value to achieve 30 Hz
-    TIM6->PSC = 500-1;
+    TIM6->PSC = timSpeed-1;
     TIM6->ARR = 48000000 / TIME - 1;
 
     //Turn on the timer

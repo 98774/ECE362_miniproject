@@ -131,5 +131,5 @@ void Set_Goal(int *goalX, int *goalY){
 		*goalY += 2;
 
 
-	Draw_Goal(*goalX, *goalY, GREEN);
+	Draw_Goal(*goalX, *goalY, BLUE);
 }

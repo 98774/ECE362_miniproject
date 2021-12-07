@@ -71,6 +71,7 @@ int py = 0;
 extern int gameRunning;
 extern int gameOver;
 extern int rows;
+extern int timSpeed;
 
 void DMA1_CH2_3_DMA2_CH1_2_IRQHandler(){
 	if(DMA1->ISR & DMA_ISR_TCIF3){
@@ -92,7 +93,7 @@ int main() {
 	f_mount(fs, "", 1);
 
 	Init_Play_Devices(data);
-	sampSize = play("8bit.wav\0", header, data, data2, &fp, &br);
+	sampSize = play("music.wav\0", header, data, data2, &fp, &br);
 	fstart = fp;
 
 
@@ -104,12 +105,13 @@ int main() {
 
 	for(;;){
 		//Update timer
-		LCD_DrawLine((OFFSETX + SIZE * (XSIZE - 2) * 2),
-		    	        rows,
+		if(gameRunning)
+			LCD_DrawFillRectangle((OFFSETX + SIZE * (XSIZE - 2) * 2),
+		    	        0,
 		    	        (OFFSETX + SIZE * (XSIZE - 2) * 2) + XSIZE,
 		    	        rows, GREEN);
 
-		nano_wait(100000000); //get inputs at a reasonable speed
+		nano_wait(60000000); //get inputs at a reasonable speed
 
 		//UP
 		if(!(GPIOC->IDR & GPIO_IDR_4) && gameRunning == 1){
@@ -152,9 +154,11 @@ int main() {
 			if(!gameRunning){
 				//start game
 				gameRunning = 1;
+				timSpeed = 500;
 				xCurr = 0;
 				yCurr = 0;
 				totalMazes = 0;
+				LCD_Clear(BLACK);
 				Build_Maze();
 				Draw_Timebar();
 				Set_Goal(&goalX, &goalY);
@@ -170,13 +174,17 @@ int main() {
 			gameRunning = 0;
 	    	LCD_Clear(BLACK);
 			Draw_Game_Over(totalMazes);
+			nano_wait(1000000);
 		}
 
 		if(xCurr == goalX && yCurr == goalY){
 			gameRunning = 0;
 			xCurr = 0;
 			yCurr = 0;
+			timSpeed -= (timSpeed >= 0 && timSpeed >= 200) ? 50 : 0;
 			totalMazes++;
+			Draw_Completed_Message(totalMazes);
+			LCD_Clear(BLACK);
 			Build_Maze();
 			Draw_Timebar();
 			Set_Goal(&goalX, &goalY);

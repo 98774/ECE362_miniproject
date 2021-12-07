@@ -233,6 +233,8 @@ void Init_Play_Devices(uint8_t *data){
    NVIC_EnableIRQ(DMA1_Ch2_3_DMA2_Ch1_2_IRQn);
 }
 
+//When I wrote this, only me and God knew how it worked
+//... now only God knows
 uint16_t play(char *fileName,  uint8_t *header, uint8_t *data, uint8_t *data2, FIL *fp, UINT *br){
     //argv is array that contains string filename
     FRESULT fr; //return code of f_open
@@ -255,6 +257,7 @@ uint16_t play(char *fileName,  uint8_t *header, uint8_t *data, uint8_t *data2, F
     Print_Header(header);
 
     uint32_t sampRate = Get_4(&header[24], 'n', 0);
+    uint32_t byteRate = Get_4(&header[24], 'n', 0);
     uint16_t sampSize = Get_2(&header[34], 'n', 0);
     uint32_t waveDataLength = Get_4(&header[40], 'n', 0); //number of bytes to read
 
