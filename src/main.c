@@ -93,7 +93,7 @@ int main() {
 	f_mount(fs, "", 1);
 
 	Init_Play_Devices(data);
-	sampSize = play("music.wav\0", header, data, data2, &fp, &br);
+	sampSize = play("s2k20k16.wav\0", header, data, data2, &fp, &br);
 	fstart = fp;
 
 
@@ -109,7 +109,7 @@ int main() {
 			LCD_DrawFillRectangle((OFFSETX + SIZE * (XSIZE - 2) * 2),
 		    	        0,
 		    	        (OFFSETX + SIZE * (XSIZE - 2) * 2) + XSIZE,
-		    	        rows, GREEN);
+		    	        rows, BLACK);
 
 		nano_wait(60000000); //get inputs at a reasonable speed
 
@@ -177,7 +177,7 @@ int main() {
 			nano_wait(1000000);
 		}
 
-		if(xCurr == goalX && yCurr == goalY){
+		if(xCurr == goalX && yCurr == goalY && gameRunning){
 			gameRunning = 0;
 			xCurr = 0;
 			yCurr = 0;

@@ -19,8 +19,8 @@
 #define YSIZE 19
 #define WALLXSIZE 24
 #define WALLYSIZE 34
-#define WALLCOLOR BLACK
-#define BACKCOLOR WHITE
+#define WALLCOLOR BLUE
+#define BACKCOLOR BLACK
 
 typedef struct cell{
 	bool in;  //Is this cell in the maze?

@@ -30,7 +30,6 @@ void Draw_Completed_Message(int totalMazes){
 	sprintf(numMazes,"%d", totalMazes);
 	char *mazesNot1 = "Score:   ";
 
-
 	LCD_Clear(WHITE);
 	LCD_DrawString(80, 150, BLACK, WHITE, mazesNot1, LARGE, 0);
 	LCD_DrawString(140, 150, RED, WHITE, numMazes, LARGE, 0);
@@ -76,5 +75,5 @@ void Draw_Timebar(){
 	LCD_DrawFillRectangle((OFFSETX + SIZE * (XSIZE - 2) * 2),
 	        0,
 	        (OFFSETX + SIZE * (XSIZE - 2) * 2) + XSIZE,
-	        (OFFSETY + SIZE * (YSIZE - 2) * 2) + YSIZE, MAGENTA);
+	        (OFFSETY + SIZE * (YSIZE - 2) * 2) + YSIZE, GREEN);
 }

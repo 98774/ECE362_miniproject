@@ -4,6 +4,7 @@
 #include "mazegen.h"
 #include "lcd.h"
 
+//#define TRAIL BLACK
 int gameRunning = 0;
 extern cell WALLS[WALLXSIZE][WALLYSIZE];
 
@@ -73,7 +74,7 @@ int move_down(int xCurr, int yCurr)
 {
 	if((yCurr + 1) < WALLYSIZE && !WALLS[xCurr][yCurr + 1].isWall)
 	{
-		Draw_Cell(xCurr,yCurr,0xffff);
+		Draw_Cell(xCurr,yCurr, BACKCOLOR);
 		yCurr += 1;
 		Draw_Cell(xCurr,yCurr,0xf800);
 
@@ -86,7 +87,7 @@ int move_up(int xCurr, int yCurr)
 	if( (yCurr) > 0 && !WALLS[xCurr][yCurr - 1].isWall)
 
 	{
-		Draw_Cell(xCurr,yCurr,0xffff);
+		Draw_Cell(xCurr,yCurr, BACKCOLOR);
 		yCurr -= 1;
 		Draw_Cell(xCurr,yCurr,0xf800);
 
@@ -99,7 +100,7 @@ int move_right(int xCurr, int yCurr)
 {
 	if(xCurr + 1 < WALLXSIZE && !WALLS[xCurr + 1][yCurr].isWall)
 	{
-		Draw_Cell(xCurr,yCurr,0xffff);
+		Draw_Cell(xCurr,yCurr, BACKCOLOR);
 		xCurr += 1;
 		Draw_Cell(xCurr,yCurr,0xf800);
 	}
@@ -111,7 +112,7 @@ int move_left(int xCurr, int yCurr)
 {
 	if( (xCurr) > 0 && !WALLS[xCurr - 1][yCurr].isWall)
 	{
-		Draw_Cell(xCurr,yCurr,0xffff);
+		Draw_Cell(xCurr,yCurr, BACKCOLOR);
 		xCurr -= 1;
 		Draw_Cell(xCurr,yCurr,0xf800);
 
@@ -131,5 +132,5 @@ void Set_Goal(int *goalX, int *goalY){
 		*goalY += 2;
 
 
-	Draw_Goal(*goalX, *goalY, BLUE);
+	Draw_Goal(*goalX, *goalY, GREEN);
 }
