@@ -1,5 +1,4 @@
-# ECE362 Mini Project
-The game of Pong
-maybe?
+# ECE362 Mini Project: Maze Runner
+Navigate the maze using the arrows
 
-src.zip is Jonathon's lab 10 source
+Built using an STM32 microprocessor
